@@ -6,26 +6,35 @@
 \usage{
 upgrade_packages(pkgs = NULL, lib = .libPaths()[1],
   repos = getOption("repos"), type = .Platform$pkgType,
-  dependencies = c("Depends", "Imports", "LinkingTo"), quiet = TRUE)
+  dependencies = c("Depends", "Imports", "LinkingTo"))
 }
 \arguments{
-\item{pkgs}{TODO}
+\item{pkgs}{character vector giving the names of the packages to upgrade - if
+\code{NULL} then all currently installed packages will be used}
 
-\item{lib}{TODO}
+\item{lib}{string giving the the library directory in which to install the packages}
 
-\item{repos}{TODO}
+\item{repos}{string giving the URL of the repositories to use}
 
-\item{type}{TODO}
+\item{type}{string giving the type of package to download and install (see Details)}
 
-\item{dependencies}{TODO}
-
-\item{quiet}{TODO}
+\item{dependencies}{character vector giving the types of dependencies to
+install/update, a subset of c("Depends", "Imports", "LinkingTo", "Suggests",
+"Enhances")}
 }
 \description{
 \itemize{
 \item Installs any packages in \code{pkgs} that are not already installed
 \item Updates any packages in \code{pkgs} that are installed but out-of-date.
 }
+}
+\details{
+Note that using \code{type=.Platform$pkgType} will only install binary versions (e.g.
+if using OSX 10.13 or higher the type will probably be \code{"mac.binary.el-capitan"}).
+Sometimes there are more up-to-date source versions available, in which case you will
+either need to change the arguement to \code{type=getOption("pkgType")} or
+\code{type="source"}, or update those packages manually (e.g. using the 'Update
+packages' facility within RStudio).
 }
 \examples{
 \dontrun{
