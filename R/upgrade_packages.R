@@ -35,56 +35,91 @@ upgrade_packages = function(pkgs = NULL,
                             type = .Platform$pkgType,
                             dependencies = c("Depends", "Imports", "LinkingTo")){
     
-    inst = utils::installed.packages(lib.loc = lib)
-    if(is.null(pkgs)) pkgs = rownames(inst)
-    cran = utils::available.packages(repos = repos, type = type)
-    if(nrow(cran) == 0) return(invisible())
-    pkgs = pkgs %>% intersect(rownames(cran))
+    # helper function to extract the versions of currently installed packages
+    installed_packages = function(priority = NULL){
+        utils::installed.packages(lib.loc = lib, priority = priority) %>% 
+            as_tibble %>%
+            dplyr::transmute(
+                pkg = .data$Package, 
+                version = numeric_version(.data$Version)
+            )
+    }
+    
+    # get versions of currently installed packages
+    installed = installed_packages()
+    if(is.null(pkgs)) pkgs = installed$pkg
+    
+    # get list of available packages in the repos
+    available = utils::available.packages(repos = repos, type = type)
+    if(nrow(available) == 0) return(invisible())
+    
+    # ignore pkgs that aren't available in the repos
+    pkgs = pkgs %>% intersect(rownames(available))
     if(length(pkgs) == 0){
         message("none of these packages are available at ", repos, 
                 " (for type ", type, ")")
         return(invisible())
     }
+    
+    # get a list of dependecies for all pkgs (ignoring base pkgs)
     if(length(dependencies) > 0){
         deps = tools::package_dependencies(
             packages = pkgs,
-            db = cran, 
+            db = available, 
             which = dependencies, 
             recursive = TRUE, 
             verbose = FALSE
         )
         pkgs = unique(sort(c(pkgs, unlist(deps))))
     }
-    base = utils::installed.packages(lib.loc = lib, priority = "base")
+    base = installed_packages("base")$pkg
     pkgs = setdiff(pkgs, rownames(base))
     if(length(pkgs) == 0) return(invisible())
-    pkgs = cran %>%
+    
+    # simplify 'available' for more convenient usage
+    available = available %>%
         as_tibble %>%
-        select(one_of("Package", "Version")) %>%
-        filter(.data$Package %in% !!pkgs) %>%
-        left_join(
-            inst %>%
-                as_tibble %>%
-                select(one_of("Package", "Version")),
-            by = "Package",
-            suffix = c(".cran", ".inst")
-        ) %>%
-        filter(!(.data$Version.cran > .data$Version.inst) %in% FALSE) %>% 
-        `[[`("Package")
-    # TDOD: tell user which packages will be updated?
+        dplyr::transmute(
+            pkg = .data$Package, 
+            version = numeric_version(.data$Version)
+        ) %>% 
+        filter(.data$pkg %in% !!pkgs)
+    
+    # get a list of all pkgs that are either not installed or are out-of-date
+    pkgs = available %>%
+        left_join(installed, "pkg", suffix = c(".available", ".installed")) %>% 
+        filter(!(.data$version.available > .data$version.installed) %in% FALSE)
+    if(nrow(pkgs) > 0){
+        message("the following packages will be installed/updated:")
+        pkgs %>% 
+            select(
+                ` ` = .data$pkg, 
+                installed = .data$version.installed, 
+                available = .data$version.available
+            ) %>% 
+        print.data.frame(row.names = FALSE, right = FALSE)
+    }
+    pkgs = pkgs$pkg
+
+    # loop over the pkgs to install/update
     for(pkg in pkgs){ # pkg = pkgs[1]
-        cran_version = numeric_version(cran[pkg, "Version"])
-        inst = utils::installed.packages(lib.loc = lib)
-        pkg_missing = !pkg %in% rownames(inst)
-        if(pkg_missing){
-            inst_version = numeric_version(0)
-            msg = paste("installing", pkg, cran_version)
-        }else{
-            inst_version = numeric_version(inst[pkg, "Version"])
-            msg = paste("upgrading", pkg, inst_version, "->", cran_version)
-        }
-        if(inst_version < cran_version){
-            message(msg)
+        
+        installed_version = installed %>% 
+            filter(.data$pkg == !!pkg) %>% 
+            `[[`("version") %>% 
+            numeric_version
+        
+        available_version = available %>% 
+            filter(.data$pkg == !!pkg) %>% 
+            `[[`("version") %>% 
+            numeric_version
+        
+        if(!isFALSE(installed_version < available_version)){
+            if(length(installed_version) == 0){
+                message(paste("installing", pkg, available_version))
+            }else{
+                message(paste("upgrading", pkg, installed_version, "->", available_version))
+            }
             utils::capture.output({
                 suppressMessages({
                     utils::install.packages(
@@ -97,22 +132,19 @@ upgrade_packages = function(pkgs = NULL,
                     )
                 })
             })
+            installed = installed_packages()
         }
     }
-    # TDOD: tell user if later packages are available from source?
+    
+    # tell user if later packages are available from source
     if(!any(c("source", "both") %in% type)){
-        src_pkgs = dplyr::inner_join(
-            utils::installed.packages(lib.loc = lib) %>%
-                as_tibble %>%
-                select(pkg = .data$Package, installed = .data$Version),
-            utils::available.packages(repos = repos, type = "source") %>%
-                as_tibble %>%
-                select(pkg = .data$Package, available = .data$Version),
-            by = "pkg"
-        ) %>%
-            filter(!(.data$available > .data$installed) %in% FALSE)
+        src_pkgs = utils::available.packages(repos = repos, type = "source") %>%
+            as_tibble %>%
+            select(pkg = .data$Package, version = .data$Version) %>% 
+            inner_join(installed, by = "pkg", suffix = c(".available", ".installed")) %>%
+            filter(!(.data$version.available > .data$version.installed) %in% FALSE)
         if(nrow(src_pkgs) > 0){
-            message("later versions are available from source for the following packages:")
+            message("later versions are available from source:")
             src_pkgs %>% 
                 `colnames<-`(c("", "installed", "available")) %>% 
                 print.data.frame(row.names = FALSE, right = FALSE)
