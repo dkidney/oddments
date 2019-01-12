@@ -6,7 +6,8 @@
 \usage{
 upgrade_packages(pkgs = NULL, lib = .libPaths()[1],
   repos = getOption("repos"), type = .Platform$pkgType,
-  dependencies = c("Depends", "Imports", "LinkingTo"))
+  dependencies = c("Depends", "Imports", "LinkingTo"),
+  check_source = FALSE)
 }
 \arguments{
 \item{pkgs}{character vector giving the names of the packages to upgrade - if
@@ -21,6 +22,10 @@ upgrade_packages(pkgs = NULL, lib = .libPaths()[1],
 \item{dependencies}{character vector giving the types of dependencies to
 install/update, a subset of c("Depends", "Imports", "LinkingTo", "Suggests",
 "Enhances")}
+
+\item{check_source}{if \code{TRUE} check to see if there are later versions available
+from source, but don't install/update (ignored if \code{type = "source"} or
+\code{"both"})}
 }
 \description{
 \itemize{

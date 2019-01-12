@@ -1,9 +1,11 @@
-*.Rproj
-*.Rproj.user
-*.Rhistory
+.DS_Store
+.Rhistory
+.Rproj.user
 *.RData
-*.Ruserdata
+*.Rproj
 src/*.o
 src/*.so
 src/*.dll
-.Rproj.user
+*.Rproj.user
+*.Rhistory
+*.Ruserdata
