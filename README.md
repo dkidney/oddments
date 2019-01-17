@@ -11,5 +11,5 @@ You can install the released version of oddments from
 [CRAN](https://CRAN.R-project.org) with:
 
 ``` r
-install.packages("oddments")
+devtools::install_github("dkidney/oddments")
 ```
