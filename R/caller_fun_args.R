@@ -8,9 +8,7 @@
 #' @examples
 #' \dontrun{
 #'
-#' h = function(a = 1, b = 2, c = 3, ...){
-#'   caller_fun_args()
-#' }
+#' h = function(a = 1, b = 2, c = 3, ...) caller_fun_args()
 #' h(b = 22, d = 44, e = 55)
 #' }
 
@@ -22,9 +20,10 @@ caller_fun_args = function(){
     defs[["..."]] = NULL
     arg_names = names(args)
     def_names = names(defs)
+    dot_names = setdiff(arg_names, def_names)
     defs = defs[setdiff(def_names, arg_names)]
     args = c(args, defs)
-    args[c(def_names, setdiff(arg_names, def_names))]
+    args[c(def_names, dot_names)]
 }
 
 
