@@ -12,7 +12,8 @@ other repositories.
 
 ## Installation
 
-You can install oddments from [CRAN](https://CRAN.R-project.org) with:
+You can install oddments from
+[Github](https://www.github.com/dkidney/oddments) with:
 
 ``` r
 # release version
