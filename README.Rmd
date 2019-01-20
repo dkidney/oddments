@@ -33,7 +33,7 @@ devtools::install_github("dkidney/oddments")
 devtools::install_github("dkidney/oddments", ref = "develop")
 ```
 
-<!-- ## Examples -->
+## Examples
 
-<!-- TODO -->
+TODO
 

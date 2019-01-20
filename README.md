@@ -7,8 +7,8 @@
 status](https://travis-ci.org/dkidney/oddments.svg?branch=master)
 
 The oddments package is where I keep various functions that I have found
-and one time or another but which dont really fit in any of my other
-repositories.
+useful at one time or another but which dont really fit in any of my
+other repositories.
 
 ## Installation
 
