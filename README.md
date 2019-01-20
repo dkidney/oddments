@@ -3,6 +3,9 @@
 
 # oddments
 
+![Travis build
+status](https://travis-ci.org/dkidney/oddments.svg?branch=master)
+
 The goal of oddments is to …
 
 ## Installation
