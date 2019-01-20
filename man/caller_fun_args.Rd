@@ -7,8 +7,8 @@
 caller_fun_args()
 }
 \description{
-Get a list of argument values for the caller function, including default
-argument values and any additional arguments passed via 'dots'.
+Get a list of all argument values for the caller function, including
+default argument values and any additional arguments passed via \link[base]{dots}.
 }
 \details{
 I made this function because \link[base]{match.call} doesn't return default

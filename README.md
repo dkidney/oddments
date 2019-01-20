@@ -4,9 +4,9 @@
 # oddments
 
 ![Travis build
-status](https://travis-ci.org/dkidney/oddments.svg?branch=master)
+status](https://travis-ci.org/dkidney/oddments.svg?branch=develop)
 
-The oddments package is where I keep various functions that I have found
+The oddments package is where I keep various functions that I’ve found
 useful at one time or another but which dont really fit in any of my
 other repositories.
 

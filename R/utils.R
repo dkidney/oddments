@@ -64,7 +64,6 @@ round_chr = function(x, digits = 0){
 #' x = "abc"
 #' stop_if(nchar(x) >= 4)
 #' stop_if(nchar(x) <= 3)
-#'
 #' }
 
 stop_if = function(expr){
