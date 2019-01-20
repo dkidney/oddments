@@ -17,9 +17,7 @@ argument values and I couldn't find an alternative that did in any other package
 \examples{
 \dontrun{
 
-h = function(a = 1, b = 2, c = 3, ...){
-  caller_fun_args()
-}
+h = function(a = 1, b = 2, c = 3, ...) caller_fun_args()
 h(b = 22, d = 44, e = 55)
 }
 }
