@@ -1,39 +1,4 @@
 
-#' @title Check R version
-#' @description Check to see if a later R version is available for download.
-#' @export
-
-check_r_version = function(){
-    if(interactive()){
-        current_version = getRversion()
-        message("Using R-", current_version)
-        sysname = Sys.info()["sysname"]
-        if(!sysname %in% c("Darwin", "Windows")){
-            message("cant check available R version for ", sysname)
-            return(invisible())
-        }
-        available_version = try(suppressWarnings({
-            url = "https://cran.r-project.org/bin/"
-            if(sysname == "Darwin") url = str_c(url, "macosx")
-            if(sysname == "Windows") url = str_c(url, "windows/base")
-            pattern = "R-[0-9]+\\.[0-9]+\\.[0-9]+"
-            url %>%
-                readLines(warn = FALSE) %>%
-                keep(str_detect(., pattern)) %>%
-                first %>%
-                str_extract(pattern) %>%
-                str_remove("R-") %>%
-                numeric_version
-        }), TRUE)
-        if(inherits(available_version, "try-error")){
-            message("no internet connection")
-        }
-        if(current_version < available_version){
-            message("R-", available_version, " now available")
-        }
-    }
-}
-
 # -------------------------------------------------------------------------------------- #
 
 #' @title Convert colours to hexadecimal format
