@@ -17,7 +17,7 @@ knitr::opts_chunk$set(
 
 # oddments
 
-![Travis build status](https://travis-ci.org/dkidney/oddments.svg?branch=develop)
+![Travis build status](https://travis-ci.org/dkidney/oddments.svg?branch=master)
 
 The oddments package is where I keep various functions that I've found useful at one time or another but which dont really fit in any of my other repositories.
 
@@ -25,7 +25,7 @@ The oddments package is where I keep various functions that I've found useful at
 
 You can install oddments from [Github](https://www.github.com/dkidney/oddments) with:
 
-``` r
+```{r, eval=FALSE}
 # release version
 devtools::install_github("dkidney/oddments")
 
