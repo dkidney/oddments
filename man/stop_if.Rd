@@ -19,6 +19,5 @@ This is intended to be the inverse of \link[base]{stopifnot}.
 x = "abc"
 stop_if(nchar(x) >= 4)
 stop_if(nchar(x) <= 3)
-
 }
 }

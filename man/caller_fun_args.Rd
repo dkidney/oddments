@@ -12,7 +12,7 @@ default argument values and any additional arguments passed via \link[base]{dots
 }
 \details{
 I made this function because \link[base]{match.call} doesn't return default
-argument values and I couldn't find an alternative that did in any other packages.
+argument values and I couldn't find an alternative that did in any other package.
 }
 \examples{
 \dontrun{
