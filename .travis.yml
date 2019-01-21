@@ -1,0 +1,14 @@
+# R for travis: see documentation at https://docs.travis-ci.com/user/languages/r
+
+language: R
+sudo: false
+cache: packages
+
+r_check_args: --as-cran
+warnings_are_errors: true
+
+env:
+  - _R_CHECK_FORCE_SUGGESTS_=false
+
+os:
+  - osx
