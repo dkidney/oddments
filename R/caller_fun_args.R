@@ -1,9 +1,9 @@
 
 #' @title Caller function argument values
-#' @description Get a list of argument values for the caller function, including default
-#'   argument values and any additional arguments passed via 'dots'.
+#' @description Get a list of all argument values for the caller function, including
+#'   default argument values and any additional arguments passed via \link[base]{dots}.
 #' @details I made this function because \link[base]{match.call} doesn't return default
-#'   argument values and I couldn't find an alternative that did in any other packages.
+#'   argument values and I couldn't find an alternative that did in any other package.
 #' @export
 #' @examples
 #' \dontrun{

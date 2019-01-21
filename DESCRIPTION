@@ -1,12 +1,14 @@
 Package: oddments
-Title: a mixed bag of useful functions
-Version: 0.0.1.9000
+Title: a mixed bag of functions
+Version: 0.0.2
 Authors@R: 
     person(given = "Darren",
            family = "Kidney",
            role = c("aut", "cre"),
            email = "darrenkidney@yahoo.co.uk")
-Description: What the package does (one paragraph).
+Description: The oddments package is where I keep various
+    functions that I have found useful at one time or another but which
+    dont really fit in any of my other repositories.
 License: MIT + file LICENSE
 URL: https://github.com/dkidney/oddments
 BugReports: https://github.com/dkidney/oddments/issues
