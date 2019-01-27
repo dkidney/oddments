@@ -6,9 +6,9 @@
 \alias{oddments-package}
 \title{oddments: a mixed bag of functions}
 \description{
-The oddments package is where I keep various
-    functions that I have found useful at one time or another but which
-    dont really fit in any of my other repositories.
+The oddments package contains various functions
+    that I've found useful at one time or another but which dont really
+    fit in any of my other repositories.
 }
 \seealso{
 Useful links:

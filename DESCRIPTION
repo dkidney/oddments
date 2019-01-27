@@ -6,9 +6,9 @@ Authors@R:
            family = "Kidney",
            role = c("aut", "cre"),
            email = "darrenkidney@yahoo.co.uk")
-Description: The oddments package is where I keep various
-    functions that I have found useful at one time or another but which
-    dont really fit in any of my other repositories.
+Description: The oddments package contains various functions
+    that I've found useful at one time or another but which dont really
+    fit in any of my other repositories.
 License: MIT + file LICENSE
 URL: https://github.com/dkidney/oddments
 BugReports: https://github.com/dkidney/oddments/issues
