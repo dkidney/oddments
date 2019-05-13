@@ -1,16 +1,24 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-oddments
-========
 
-![Travis build status](https://travis-ci.org/dkidney/oddments.svg?branch=master)
+# oddments
 
-The oddments package contains various functions that I've found useful at one time or another but which dont really fit in any of my other repositories.
+<!-- badges: start -->
 
-Installation
-------------
+[![Lifecycle:
+experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)  
+![Travis build
+status](https://travis-ci.org/dkidney/oddments.svg?branch=master)
+<!-- badges: end -->
 
-You can install oddments from [Github](https://www.github.com/dkidney/oddments) with:
+The oddments package contains various functions that I’ve found useful
+at one time or another but dont really fit in any of my other
+repositories.
+
+## Installation
+
+You can install oddments from
+[Github](https://www.github.com/dkidney/oddments) with:
 
 ``` r
 # release version
@@ -20,7 +28,6 @@ devtools::install_github("dkidney/oddments")
 devtools::install_github("dkidney/oddments", ref = "develop")
 ```
 
-Examples
---------
+## Examples
 
 TODO
