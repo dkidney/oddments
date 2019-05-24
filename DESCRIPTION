@@ -1,6 +1,6 @@
 Package: oddments
 Title: miscellaneous functions
-Version: 0.0.2.9000
+Version: 1.0.0
 Authors@R: 
     person(given = "Darren",
            family = "Kidney",
