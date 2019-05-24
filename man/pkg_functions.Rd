@@ -3,10 +3,34 @@
 \name{pkg_functions}
 \alias{pkg_functions}
 \alias{pkg_status}
+\alias{pkg_deps}
+\alias{pkg_revdeps}
+\alias{pkg_updates}
+\alias{pkg_upgrades}
 \title{Package utility functions}
 \usage{
 pkg_status(pkgs, lib = .libPaths()[1], repos = getOption("repos"),
   type = .Platform$pkgType, installed = NULL, available = NULL)
+
+pkg_deps(pkgs, recursive = TRUE, reverse = FALSE,
+  which_deps = c("Depends", "Imports", "LinkingTo"),
+  lib = .libPaths()[1], repos = "https://cran.rstudio.com",
+  type = .Platform$pkgType, available = NULL, installed = NULL)
+
+pkg_revdeps(pkgs, recursive = TRUE, which_deps = c("Depends",
+  "Imports", "LinkingTo"), lib = .libPaths()[1],
+  repos = "https://cran.rstudio.com", type = .Platform$pkgType,
+  available = NULL, installed = NULL)
+
+pkg_updates(pkgs = NULL, lib = .libPaths()[1],
+  repos = getOption("repos"), type = .Platform$pkgType,
+  which_deps = c("Depends", "Imports", "LinkingTo"), available = NULL,
+  installed = NULL)
+
+pkg_upgrades(pkgs = NULL, lib = .libPaths()[1],
+  repos = getOption("repos"), type = .Platform$pkgType,
+  which_deps = c("Depends", "Imports", "LinkingTo"), available = NULL,
+  installed = NULL)
 }
 \arguments{
 \item{pkgs}{\code{[character vector]} package names}
@@ -23,11 +47,11 @@ pkg_status(pkgs, lib = .libPaths()[1], repos = getOption("repos"),
 \item{available}{either \code{NULL} or an object returned by
 \link[utils]{available.packages}}
 
-\item{which_deps}{\code{[character vector]} names of dependency packages to include}
-
 \item{recursive}{???}
 
 \item{reverse}{???}
+
+\item{which_deps}{\code{[character vector]} names of dependency packages to include}
 }
 \description{
 \describe{

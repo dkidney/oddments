@@ -59,7 +59,7 @@
 #' @importFrom withr local_options
 #' @example inst/examples/examples-packages.R
 
-#' @rdname packages
+#' @rdname pkg_functions
 #' @name pkg_status
 #' @export
 pkg_status <- function(pkgs,
@@ -96,7 +96,7 @@ pkg_status <- function(pkgs,
         )
 }
 
-#' @rdname packages
+#' @rdname pkg_functions
 #' @name pkg_deps
 #' @export
 pkg_deps <- function(pkgs,
@@ -154,7 +154,7 @@ pkg_deps <- function(pkgs,
 }
 
 
-#' @rdname packages
+#' @rdname pkg_functions
 #' @name pkg_revdeps
 #' @export
 pkg_revdeps <- function(pkgs,
@@ -183,7 +183,7 @@ pkg_revdeps <- function(pkgs,
 }
 
 
-#' @rdname packages
+#' @rdname pkg_functions
 #' @name pkg_updates
 #' @export
 pkg_updates <- function(pkgs = NULL,
@@ -270,7 +270,7 @@ pkg_updates <- function(pkgs = NULL,
         select(.data$pkg, ends_with("version"), .data$revdeps)
 }
 
-#' @rdname packages
+#' @rdname pkg_functions
 #' @name pkg_upgrades
 #' @export
 pkg_upgrades <- function(pkgs = NULL,
