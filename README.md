@@ -8,7 +8,9 @@
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)  
 ![Travis build
-status](https://travis-ci.org/dkidney/oddments.svg?branch=master)
+status](https://travis-ci.org/dkidney/oddments.svg?branch=master)  
+[![CRAN
+status](https://www.r-pkg.org/badges/version/oddments)](https://cran.r-project.org/package=oddments)
 <!-- badges: end -->
 
 The oddments package contains various functions that I’ve found useful
