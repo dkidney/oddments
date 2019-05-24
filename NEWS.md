@@ -1,3 +1,3 @@
-# oddments 0.0.0.9000
+# oddments 1.0.0
 
-* Added a `NEWS.md` file to track changes to the package.
+First proper commit. Includes pkg_functions for upgrading packages.
