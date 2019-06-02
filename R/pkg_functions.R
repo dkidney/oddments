@@ -177,8 +177,8 @@ pkg_revdeps <- function(pkgs,
             installed = installed
         ) %>%
         rename(
-            revdeps_installed = .data$deps_installed,
-            revdeps_available = .data$deps_available
+            local_revdeps = .data$deps_installed,
+            repos_revdeps = .data$deps_available
         )
 }
 
@@ -263,11 +263,8 @@ pkg_updates <- function(pkgs = NULL,
         installed = installed
     )
     results %>%
-        left_join(
-            revdeps %>% rename(revdeps = .data$revdeps_available),
-            "pkg"
-        ) %>%
-        select(.data$pkg, ends_with("version"), .data$revdeps)
+        left_join(revdeps, "pkg") %>%
+        select(.data$pkg, ends_with("version"), ends_with("revdeps"))
 }
 
 #' @rdname pkg_functions
