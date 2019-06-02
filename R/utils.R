@@ -98,15 +98,12 @@ stop_if = function(expr){
 #' }
 
 view_html = function(x){
-  if(!interactive()) return(invisible())
-  if(requireNamespace("rstudioapi", quietly = TRUE)){
+  if(interactive() && requireNamespace("rstudioapi", quietly = TRUE)){
     file_path = tempfile(fileext = ".html")
     writeLines(as.character(x), file_path)
     rstudioapi::viewer(file_path)
   }
 }
-
-
 
 
 
