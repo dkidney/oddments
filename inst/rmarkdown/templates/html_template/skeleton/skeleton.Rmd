@@ -1,0 +1,274 @@
+---
+pagetitle: "asfd"
+title: "| Title line 1 \n| Title line 2 \n"
+subtitle: "Subtitle"
+author: "Darren Kidney"
+date: '`r format(Sys.Date(), "%d %b %Y")`'
+output: 
+  oddments:::html_template:
+  # html_document:
+  # code_folding: hide
+    # df_print: kable
+    # fig_width: 7
+    # fig_height: 5
+    fig_caption: true
+    highlight: haddock
+    # includes:
+    #	 before_body: hello_world.html
+    #	 after_body: hello_world.html
+    keep_md: false
+    mathjax: default
+    number_sections: true
+    self_contained: true
+    smart: false
+    # template: quarterly_report.html
+    # theme: cosmo
+    toc: true
+    toc_depth: 4
+    # toc_float:
+    #	 collapsed: false
+    #	 smooth_scroll: true
+editor_options:
+  chunk_output_type: console
+runtime: shiny
+---
+
+```{r knitr_setup, include=FALSE}
+knitr::opts_chunk$set(
+    comment = "##",
+    echo = TRUE,
+    engine.path = "/usr/local/Cellar/python3/3.7.0/bin/python3",
+    eval = TRUE,
+    message = FALSE,
+    warning = FALSE,
+    
+    # figures
+    dev = "png",
+    dev.args = list(
+        family = "Avenir",
+        pointsize = 11
+    ),
+    fig.align = "center", 
+    fig.path = "figures/fig_",
+    fig.show = "hold",
+    # fig.dim = c(7, 5),
+    fig.height = 7 * 2 / (1 + sqrt(5)),
+    fig.width = 7,
+    out.width = "75%"
+)
+
+# knitr::opts_chunk$set(
+#     max.print = 10, # The number of rows to print.
+#     rows.print = 10, # The number of rows to display.
+#     cols.print = 10, # The number of columns to display.
+#     cols.min.print = 10, # The minimum number of columns to display.
+#     pages.print = 10, # The number of pages to display under page navigation.
+#     paged.print = TRUE, # When set to FALSE turns off paged tables.
+#     rownames.print = TRUE # When set to FALSE turns off row names.
+# )
+```
+
+```{css, include=FALSE}
+<!-- additional css code can go here -->
+
+ul {
+  list-style-type: square;
+}
+
+.MathJax_Display {
+  padding: 0.5em;
+  background-color: #eaeff3
+}
+```
+
+*******************************************************************************
+
+## Preamble {-}
+
+```{r, r_setup}
+library(magrittr)
+library(tidyverse)
+# library(templates)
+options(
+    knitr.table.format = "html", # dont need this if using library(kableExtra)
+    stringsAsFactors = FALSE,
+    width = 100
+)
+par(
+    family = knitr::opts_chunk$get("dev.args")$family
+)
+theme_set(
+    theme_bw(
+        base_family = knitr::opts_chunk$get("dev.args")$family,
+        base_size = knitr::opts_chunk$get("dev.args")$pointsize
+    )
+)
+```
+
+*******************************************************************************
+
+# Heading 1
+
+## Heading 2
+
+### Heading 3
+
+#### Heading 4
+
+##### Heading 5
+
+*******************************************************************************
+
+# Accessing knitr options
+
+```{r}
+knitr::opts_chunk$get("dev.args")
+```
+
+*******************************************************************************
+
+# Tables
+
+## Default df_print
+
+```{r}
+mtcars %>% head(10)
+```
+
+## DT::datatable
+
+```{r}
+mtcars %>% DT::datatable()
+```
+
+## KableExtra
+
+```{r}
+mtcars %>% 
+    knitr::kable(
+        format = "html",
+        digits = 5,
+        row.names = TRUE,
+        caption = "A caption",
+        format.args = list(big.mark = ",")
+    ) %>% 
+    kableExtra::kable_styling(
+        full_width = FALSE,
+        bootstrap_options = c("striped", "condensed"),
+        position = "center"
+    ) %>%
+    kableExtra::scroll_box(
+        height = "500px",
+        width = "100%",
+        box_css = "border: 0px;"
+    )
+```
+
+
+*******************************************************************************
+
+# Figures
+
+```{r pressure, fig.align="default", fig.show="hold", out.width="50%"}
+mtcars %>% ggplot(aes(mpg)) + geom_histogram()
+mtcars %>% ggplot(aes(disp)) + geom_histogram()
+mtcars %>% ggplot(aes(drat)) + geom_histogram()
+mtcars %>% ggplot(aes(qsec)) + geom_histogram()
+```
+
+*******************************************************************************
+
+# Tabs {.tabset}
+
+## mpg
+
+```{r, echo=FALSE}
+mtcars %>% ggplot(aes(mpg)) + geom_histogram()
+```
+
+*******************************************************************************
+
+## disp
+
+```{r, echo=FALSE}
+mtcars %>% ggplot(aes(disp)) + geom_histogram()
+```
+
+*******************************************************************************
+
+# Python
+
+```{r, results='hold'}
+python_engine = knitr::opts_chunk$get("engine.path") %T>% print
+eval_python = file.exists(python_engine) %T>% print
+```
+
+```{python, python.reticulate=FALSE, eval=eval_python}
+import sys
+print(sys.version)
+```
+
+```{python, python.reticulate=FALSE, eval=eval_python}
+import os
+print(os.getcwd())
+```
+
+
+*******************************************************************************
+
+# Shiny
+
+```{r eruptions, echo=FALSE}
+sliderInput(
+  'binwidth', label = 'Bin width:',
+  min = 0.1, max = 10, value = 1
+)
+
+renderPlot({
+    mtcars %>% 
+        ggplot(aes(mpg)) +
+        geom_histogram(binwidth = as.numeric(input[["binwidth"]]))
+}
+)
+```
+
+
+*******************************************************************************
+
+```{css}
+#myselector1 {
+   color: red;
+}
+
+.myselector2 {
+   font-size: 1.2em;
+}
+```
+
+*******************************************************************************
+
+# Next Steps {#myselector1 .myselector2}
+
+Hello.
+
+Hello again.
+
+
+*******************************************************************************
+
+# Appendix: Useful links {-}
+
+https://bookdown.org/yihui/rmarkdown
+
+<https://rmarkdown.rstudio.com>.
+
+<https://yihui.name/knitr/options/>
+
+<https://rmarkdown.rstudio.com/html_document_format.html>
+
+<https://rmarkdown.rstudio.com/word_document_format.html>
+
+<https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors>
+
+
+

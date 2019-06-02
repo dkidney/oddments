@@ -1,0 +1,4 @@
+name: Template Document (HTML)
+description: >
+  Template for HTML documents using custom CSS file.
+create_dir: false
