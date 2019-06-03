@@ -56,6 +56,10 @@ knitr::opts_chunk$set(
     fig.width = 7,
     out.width = "75%"
 )
+knitr::opts_template$set(
+    # cat_filename = list(echo = FALSE, results = "asis"),
+    cat_file = list(echo = FALSE, comment = "")
+)
 
 # knitr::opts_chunk$set(
 #     max.print = 10, # The number of rows to print.
@@ -270,5 +274,9 @@ https://bookdown.org/yihui/rmarkdown
 
 <https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors>
 
+*******************************************************************************
 
+# Appendix: .Rprofile {-}
 
+```{r, code=readLines('~/.Rprofile'), opts.label='cat_file'}
+```
