@@ -1,12 +1,12 @@
 
 html_template = function(...){
-    args = list(...)
-    args$css %<>%
-        replace_null(
-            "rmarkdown/templates/html_template/resources/template.css" %>%
-            system.file(package = "oddments")
-        )
-    do.call(rmarkdown::html_document, args)
+  args = list(...)
+  args$css %<>%
+    replace_null(
+      "rmarkdown/templates/html_template/resources/template.css" %>%
+        system.file(package = "oddments")
+    )
+  do.call(rmarkdown::html_document, args)
 }
 
 # -------------------------------------------------------------------------------------- #
@@ -43,7 +43,10 @@ kable2 = function(x, scroll = FALSE, ...){
     kable_styling(
       full_width = FALSE,
       bootstrap_options = c("striped", "condensed"),
-      position = "center"
+      position = "center",
+      position = "left",
+      font_size = 11,
+      fixed_thead = TRUE
     ) %>%
     row_spec(
       0,
