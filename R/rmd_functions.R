@@ -1,4 +1,5 @@
 
+#' @importFrom rmarkdown html_document
 html_template = function(...){
   args = list(...)
   args$css %<>%
@@ -6,7 +7,7 @@ html_template = function(...){
       "rmarkdown/templates/html_template/resources/template.css" %>%
         system.file(package = "oddments")
     )
-  do.call(rmarkdown::html_document, args)
+  do.call(html_document, args)
 }
 
 # -------------------------------------------------------------------------------------- #
@@ -16,14 +17,15 @@ html_template = function(...){
 #' @title TODO
 #' @description A combination of \link[knitr]{kable}, \link[kableExtra]{kable_styling} and
 #'   \link[kableExtra]{scroll_box}.
-#' @param x [data.frame] TODO
-# @details TODO
+#' @param x (data.frame)
+#' @param scroll (boolean) if \code{TRUE} then a \link[kableExtra]{scroll_box} will be
+#'   used
+#' @param ... additional arguments to pass to \link[knitr]{kable}
 #' @importFrom knitr kable
 #' @importFrom kableExtra kable_styling
 #' @importFrom kableExtra column_spec
 #' @importFrom kableExtra row_spec
 #' @importFrom kableExtra scroll_box
-# @example inst/examples/example-kable2.R
 #' @export
 #' @examples
 #' \dontrun{
@@ -44,7 +46,6 @@ kable2 = function(x, scroll = FALSE, ...){
       full_width = FALSE,
       bootstrap_options = c("striped", "condensed"),
       position = "center",
-      position = "left",
       font_size = 11,
       fixed_thead = TRUE
     ) %>%
