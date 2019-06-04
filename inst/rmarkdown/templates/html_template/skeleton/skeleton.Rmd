@@ -12,11 +12,13 @@ output:
     # fig_width: 7
     # fig_height: 5
     fig_caption: true
+    # fig_retina: 1
     highlight: haddock
     # includes:
+    #  in_header: hello_world.html
     #	 before_body: hello_world.html
     #	 after_body: hello_world.html
-    keep_md: false
+    keep_md: true
     mathjax: default
     number_sections: true
     self_contained: true
