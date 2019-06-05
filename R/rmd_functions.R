@@ -4,7 +4,7 @@ html_template = function(...){
   args = list(...)
   args$css %<>%
     replace_null(
-      "rmarkdown/templates/html_template/resources/template.css" %>%
+      "rmarkdown/templates/html_template/resources/html_template.css" %>%
         system.file(package = "oddments")
     )
   do.call(html_document, args)
@@ -38,35 +38,34 @@ html_template = function(...){
 
 kable2 = function(x, scroll = FALSE, ...){
   df = x %>%
-    kable(
+    knitr::kable(
       format = "html",
       ...
     ) %>%
-    kable_styling(
+    kableExtra::kable_styling(
       full_width = FALSE,
       bootstrap_options = c("striped", "condensed"),
       position = "center",
       font_size = 11,
       fixed_thead = TRUE
     ) %>%
-    row_spec(
+    kableExtra::row_spec(
       0,
       bold = TRUE,
       color = "white",
-      background = "#428bca"
+      background = "#337ab7" # bootstrap_button_blue
     ) %>%
-    column_spec(
+    kableExtra::column_spec(
       1,
       bold = TRUE
     )
-  if(!scroll){
+  if (!scroll) {
     return(df)
   }
   df %>%
-    scroll_box(
+    kableExtra::scroll_box(
       height = "500px",
       width = "100%",
       box_css = "border: 0px; padding: 0px"
     )
 }
-

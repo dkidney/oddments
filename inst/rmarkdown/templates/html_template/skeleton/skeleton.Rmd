@@ -7,20 +7,27 @@ date: '`r format(Sys.Date(), "%d %b %Y")`'
 output: 
   oddments:::html_template:
   # html_document:
-  # code_folding: hide
-    # df_print: kable
+    # code_folding: hide
+    # css: '`r system.file("rmarkdown/templates/html_template/resources/html_template.css", package = "oddments")`'
+    # df_print: kable # default, kable, tibble or paged
     # fig_width: 7
     # fig_height: 5
     fig_caption: true
     # fig_retina: 1
     highlight: haddock
     # includes:
-    #  in_header: hello_world.html
-    #	 before_body: hello_world.html
-    #	 after_body: hello_world.html
+      # in_header: hello_world.html
+      #	before_body: hello_world.html
+      #	after_body: hello_world.html
     keep_md: true
+    # lib_dir: libs
     mathjax: default
     number_sections: true
+    # md_extensions: -autolink_bare_uris+hard_line_breaks
+    # pandoc_args: [
+      # "--title-prefix", "Foo",
+      # "--id-prefix", "Bar"
+    # ]
     self_contained: true
     smart: false
     # template: quarterly_report.html
@@ -28,14 +35,14 @@ output:
     toc: true
     toc_depth: 4
     # toc_float:
-    #	 collapsed: false
-    #	 smooth_scroll: true
+      #	collapsed: false
+      #	smooth_scroll: true
 editor_options:
   chunk_output_type: console
 runtime: shiny
 ---
 
-```{r knitr_setup, include=FALSE}
+```{r config, include=FALSE}
 knitr::opts_chunk$set(
     comment = "##",
     echo = TRUE,
