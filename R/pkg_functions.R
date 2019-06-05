@@ -291,7 +291,7 @@ pkg_upgrades <- function(pkgs = NULL,
     }
     n <- nrow(results)
     for (pkg in results$pkg) {
-        in_revdeps <- map_lgl(results$revdeps, function(x) any(x %in% pkg))
+        in_revdeps <- map_lgl(results$repos_revdeps, function(x) any(x %in% pkg))
         if (any(in_revdeps)) {
             i <- which(results$pkg %in% pkg)
             j <- max(which(in_revdeps))
