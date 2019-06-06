@@ -1,7 +1,7 @@
 
 #' @importFrom rmarkdown html_document
-html_template = function(...){
-  args = list(...)
+html_template <- function(...) {
+  args <- list(...)
   args$css %<>%
     replace_null(
       "rmarkdown/templates/html_template/resources/html_template.css" %>%
@@ -31,13 +31,13 @@ html_template = function(...){
 #' \dontrun{
 #'
 #' mtcars %>%
-#'   head %>%
-#'   kable2 %>%
-#'   view_html
+#'   head() %>%
+#'   kable2() %>%
+#'   view_html()
 #' }
-
-kable2 = function(x, scroll = FALSE, ...){
-  df = x %>%
+#'
+kable2 <- function(x, scroll = FALSE, ...) {
+  df <- x %>%
     knitr::kable(
       format = "html",
       ...

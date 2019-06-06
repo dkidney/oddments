@@ -16,5 +16,5 @@ Convert a vector of colours to hexadecimal format.
 col2hex("blue")
 col2hex(4)
 col2hex("4")
-col2hex(c(4,"blue"))
+col2hex(c(4, "blue"))
 }

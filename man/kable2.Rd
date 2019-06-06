@@ -22,8 +22,9 @@ A combination of \link[knitr]{kable}, \link[kableExtra]{kable_styling} and
 \dontrun{
 
 mtcars \%>\%
-  head \%>\%
-  kable2 \%>\%
-  view_html
+  head() \%>\%
+  kable2() \%>\%
+  view_html()
 }
+
 }

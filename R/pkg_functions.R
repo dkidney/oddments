@@ -249,7 +249,7 @@ pkg_updates <- function(pkgs = NULL,
         filter(!is.na(.data$repos_version)) %>%
         filter(!(.data$local_version < .data$repos_version) %in% FALSE)
     if (nrow(results) == 0) {
-        message("All packages are up-to-date :)")
+        # message("All packages are up-to-date :)")
         return(invisible())
     }
     revdeps <- pkg_revdeps(

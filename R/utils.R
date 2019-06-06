@@ -1,6 +1,6 @@
 
-has_internet <- function(){
-  content = try(suppressWarnings({
+has_internet <- function() {
+  content <- try(suppressWarnings({
     readLines("http://www.r-project.org", n = 1)
   }), TRUE)
   !inherits(content, "try-error")
@@ -16,11 +16,10 @@ has_internet <- function(){
 #' col2hex("blue")
 #' col2hex(4)
 #' col2hex("4")
-#' col2hex(c(4,"blue"))
-
-col2hex = function(x){
+#' col2hex(c(4, "blue"))
+col2hex <- function(x) {
   grDevices::col2rgb(x) %>%
-    apply(2, function(x){
+    apply(2, function(x) {
       grDevices::rgb(x[1], x[2], x[3], maxColorValue = 255)
     })
 }
@@ -34,12 +33,11 @@ col2hex = function(x){
 #' @param replacement default replacement value if \code{x} is \code{NULL}
 #' @export
 #' @examples
-#' x = NULL
-#' y = 9
+#' x <- NULL
+#' y <- 9
 #' x %>% replace_null(10)
 #' y %>% replace_null(10)
-
-replace_null = function(x, replacement = NULL){
+replace_null <- function(x, replacement = NULL) {
   rlang::`%||%`(x, replacement)
 }
 
@@ -53,8 +51,7 @@ replace_null = function(x, replacement = NULL){
 #' @examples
 #' sprintf("%.3f", pi)
 #' pi %>% round_chr(3)
-
-round_chr = function(x, digits = 0){
+round_chr <- function(x, digits = 0) {
   sprintf(paste0("%.", digits, "f"), x)
 }
 
@@ -68,15 +65,15 @@ round_chr = function(x, digits = 0){
 #' @examples
 #' \dontrun{
 #'
-#' x = "abc"
+#' x <- "abc"
 #' stop_if(nchar(x) >= 4)
 #' stop_if(nchar(x) <= 3)
 #' }
-
-stop_if = function(expr){
-  expr = rlang::enexpr(expr)
-  result = rlang::eval_bare(expr)
-  if(isTRUE(result)){
+#'
+stop_if <- function(expr) {
+  expr <- rlang::enexpr(expr)
+  result <- rlang::eval_bare(expr)
+  if (isTRUE(result)) {
     stop(rlang::expr_deparse(expr), call. = FALSE)
   }
 }
@@ -92,19 +89,15 @@ stop_if = function(expr){
 #' \dontrun{
 #'
 #' mtcars %>%
-#'   head %>%
+#'   head() %>%
 #'   knitr::kable(format = "html") %>%
-#'   view_html
+#'   view_html()
 #' }
-
-view_html = function(x){
-  if(interactive() && requireNamespace("rstudioapi", quietly = TRUE)){
-    file_path = tempfile(fileext = ".html")
+#'
+view_html <- function(x) {
+  if (interactive() && requireNamespace("rstudioapi", quietly = TRUE)) {
+    file_path <- tempfile(fileext = ".html")
     writeLines(as.character(x), file_path)
     rstudioapi::viewer(file_path)
   }
 }
-
-
-
-

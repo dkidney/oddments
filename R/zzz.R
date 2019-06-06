@@ -1,4 +1,5 @@
 
+#' @name oddments
 # @importFrom dplyr as_tibble
 # @importFrom dplyr inner_join
 # @importFrom dplyr left_join

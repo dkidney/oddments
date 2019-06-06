@@ -16,8 +16,9 @@ This is intended to be the inverse of \link[base]{stopifnot}.
 \examples{
 \dontrun{
 
-x = "abc"
+x <- "abc"
 stop_if(nchar(x) >= 4)
 stop_if(nchar(x) <= 3)
 }
+
 }

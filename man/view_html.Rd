@@ -17,8 +17,9 @@ installed to access \code{rstudioapi::\link[rstudioapi]{viewer}})
 \dontrun{
 
 mtcars \%>\%
-  head \%>\%
+  head() \%>\%
   knitr::kable(format = "html") \%>\%
-  view_html
+  view_html()
 }
+
 }

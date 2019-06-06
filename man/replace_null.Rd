@@ -16,8 +16,8 @@ Replace \code{NULL} values with a default value. Wrapper for
 \code{rlang::\link[rlang]{\%||\%}}.
 }
 \examples{
-x = NULL
-y = 9
+x <- NULL
+y <- 9
 x \%>\% replace_null(10)
 y \%>\% replace_null(10)
 }

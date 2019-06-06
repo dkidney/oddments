@@ -1,10 +1,10 @@
 \dontrun{
 
-"message" %>% heading
-"message" %>% bullet
-"message" %>% item
-"message" %>% success
-"message" %>% concern
+"message" %>% heading()
+"message" %>% bullet()
+"message" %>% item()
+"message" %>% success()
+"message" %>% concern()
 
 item("item", col = "blue")
 item("item", col = "black")
@@ -35,7 +35,7 @@ f2 <- function() {
     print(10)
     return(100)
 }
-f3 <- function(timer = FALSE){
+f3 <- function(timer = FALSE) {
     force(timer)
     itemize(f1, .message = "checking something", .timer = timer)()
     itemize(f2, .message = "checking something else", .timer = timer)()
