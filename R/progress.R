@@ -1,4 +1,5 @@
 #' @rdname progress
+#' @name progress
 #' @title Progress messages
 #' @description TODO
 #' @param x [string] progress message
@@ -9,34 +10,7 @@
 #' @importFrom stringr str_pad
 #' @importFrom stringr str_remove
 #' @example inst/examples/examples-progress.R
-
-item_ <- function(x = NULL, ..., type = c("item", "bullet", "success", "concern")) {
-    type <- match.arg(type)
-    dots <- list(...)
-    dots$x <- str_c(" ", x)
-    FUN <- cli::cat_bullet
-    if (type == "bullet") {
-        dots$bullet %<>% replace_null("bullet")
-        dots$bullet_col %<>% replace_null("white")
-        dots$col %<>% replace_null("white")
-    }
-    if (type == "item") {
-        dots$bullet %<>% replace_null("line")
-        dots$bullet_col %<>% replace_null("grey")
-        dots$col %<>% replace_null("grey")
-    }
-    if (type == "success") {
-        dots$bullet %<>% replace_null("tick")
-        dots$bullet_col %<>% replace_null("green")
-        dots$col %<>% replace_null("silver")
-    }
-    if (type == "concern") {
-        dots$bullet %<>% replace_null("square_small_filled")
-        dots$bullet_col %<>% replace_null("orange")
-        dots$col %<>% replace_null("orange")
-    }
-    do.call(FUN, dots)
-}
+NULL
 
 #' @rdname progress
 #' @name heading
@@ -77,6 +51,9 @@ concern <- function(x = NULL, ...) {
 
 #' @rdname progress
 #' @name itemize
+#' @param .f TODO
+#' @param .message TODO
+#' @param .timer TODO
 #' @importFrom purrr quietly
 #' @export
 itemize <- function(.f, ..., .message = NULL, .timer = TRUE) {
@@ -91,11 +68,14 @@ itemize <- function(.f, ..., .message = NULL, .timer = TRUE) {
         n2 <- nchar(m2)
         if (.timer) {
             dt <- finish_time %>%
-                difftime(start_time) %>%
-                prettyunits::pretty_dt() %>%
-                str_c("(", ., ")")
-            n2 <- n2 + nchar(dt)
-            m2 <- paste(m2, cli::col_cyan(dt))
+                difftime(start_time)
+            if (as.numeric(dt, units = "secs") >= 0.5) {
+                dt %<>%
+                    prettyunits::pretty_dt() %>%
+                    str_c("(", ., ")")
+                n2 <- n2 + nchar(dt)
+                m2 <- paste(m2, cli::col_cyan(dt))
+            }
         }
         m2 %<>% str_pad(max(n1, n2 + 3), "right", " ")
         if (length(result$warnings) > 0) {
@@ -119,3 +99,30 @@ itemize <- function(.f, ..., .message = NULL, .timer = TRUE) {
     }
 }
 
+item_ <- function(x = NULL, ..., type = c("item", "bullet", "success", "concern")) {
+    type <- match.arg(type)
+    dots <- list(...)
+    dots$x <- str_c(" ", x)
+    FUN <- cli::cat_bullet
+    if (type == "bullet") {
+        dots$bullet %<>% replace_null("bullet")
+        dots$bullet_col %<>% replace_null("white")
+        dots$col %<>% replace_null("white")
+    }
+    if (type == "item") {
+        dots$bullet %<>% replace_null("line")
+        dots$bullet_col %<>% replace_null("grey")
+        dots$col %<>% replace_null("grey")
+    }
+    if (type == "success") {
+        dots$bullet %<>% replace_null("tick")
+        dots$bullet_col %<>% replace_null("green")
+        dots$col %<>% replace_null("silver")
+    }
+    if (type == "concern") {
+        dots$bullet %<>% replace_null("square_small_filled")
+        dots$bullet_col %<>% replace_null("yellow")
+        dots$col %<>% replace_null("yellow")
+    }
+    do.call(FUN, dots)
+}
