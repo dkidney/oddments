@@ -1,0 +1,121 @@
+#' @rdname progress
+#' @title Progress messages
+#' @description TODO
+#' @param x [string] progress message
+#' @param ... arguments that get passed to \link[cli]{cat_bullet} (or
+#'   \link[cli]{cat_bullet} for \code{heading})
+# @details TODO
+#' @importFrom stringr str_length
+#' @importFrom stringr str_pad
+#' @importFrom stringr str_remove
+#' @example inst/examples/examples-progress.R
+
+item_ <- function(x = NULL, ..., type = c("item", "bullet", "success", "concern")) {
+    type <- match.arg(type)
+    dots <- list(...)
+    dots$x <- str_c(" ", x)
+    FUN <- cli::cat_bullet
+    if (type == "bullet") {
+        dots$bullet %<>% replace_null("bullet")
+        dots$bullet_col %<>% replace_null("white")
+        dots$col %<>% replace_null("white")
+    }
+    if (type == "item") {
+        dots$bullet %<>% replace_null("line")
+        dots$bullet_col %<>% replace_null("grey")
+        dots$col %<>% replace_null("grey")
+    }
+    if (type == "success") {
+        dots$bullet %<>% replace_null("tick")
+        dots$bullet_col %<>% replace_null("green")
+        dots$col %<>% replace_null("silver")
+    }
+    if (type == "concern") {
+        dots$bullet %<>% replace_null("square_small_filled")
+        dots$bullet_col %<>% replace_null("orange")
+        dots$col %<>% replace_null("orange")
+    }
+    do.call(FUN, dots)
+}
+
+#' @rdname progress
+#' @name heading
+#' @export
+heading <- function(...) {
+    dots <- list(...)
+    dots$col %<>% replace_null("cyan")
+    dots %>% do.call(what = cli::cat_rule)
+}
+
+#' @rdname progress
+#' @name bullet
+#' @export
+bullet <- function(x = NULL, ...) {
+    item_(x = x, ..., type = "bullet")
+}
+
+#' @rdname progress
+#' @name item
+#' @export
+item <- function(x = NULL, ...) {
+    item_(x = x, ..., type = "item")
+}
+
+#' @rdname progress
+#' @name success
+#' @export
+success <- function(x = NULL, ...) {
+    item_(x = x, ..., type = "success")
+}
+
+#' @rdname progress
+#' @name concern
+#' @export
+concern <- function(x = NULL, ...) {
+    item_(x = x, ..., type = "concern")
+}
+
+#' @rdname progress
+#' @name itemize
+#' @importFrom purrr quietly
+#' @export
+itemize <- function(.f, ..., .message = NULL, .timer = TRUE) {
+    function(...) {
+        m1 <- paste("\u2500 ", .message, "...")
+        n1 <- m1 %>% str_length()
+        cat(m1, "\r")
+        start_time <- Sys.time()
+        result <- quietly(.f)(...)
+        finish_time <- Sys.time()
+        m2 <- .message
+        n2 <- nchar(m2)
+        if (.timer) {
+            dt <- finish_time %>%
+                difftime(start_time) %>%
+                prettyunits::pretty_dt() %>%
+                str_c("(", ., ")")
+            n2 <- n2 + nchar(dt)
+            m2 <- paste(m2, cli::col_cyan(dt))
+        }
+        m2 %<>% str_pad(max(n1, n2 + 3), "right", " ")
+        if (length(result$warnings) > 0) {
+            item(m2)
+        } else {
+            success(m2)
+        }
+        if (length(result$warnings) > 0) {
+            for (i in seq_along(result$warnings)) {
+                concern(result$warnings[[i]])
+            }
+        }
+        if (length(result$messages) > 0) {
+            for (i in seq_along(result$messages)) {
+                result$messages[[i]] %>%
+                    str_remove("\\n$") %>%
+                    bullet(bullet = "square_small")
+            }
+        }
+        result$result
+    }
+}
+
