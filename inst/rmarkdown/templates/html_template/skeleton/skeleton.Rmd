@@ -182,7 +182,7 @@ mtcars %>%
 
 # Figures
 
-```{r pressure, fig.align="default", fig.show="hold", out.width="50%"}
+```{r pressure, fig.align="default", fig.show="hold", out.width=c("40%", "60%")}
 mtcars %>% ggplot(aes(mpg)) + geom_histogram()
 mtcars %>% ggplot(aes(disp)) + geom_histogram()
 mtcars %>% ggplot(aes(drat)) + geom_histogram()

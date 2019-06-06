@@ -16,7 +16,7 @@
 # @importFrom stringr str_detect
 # @importFrom stringr str_extract
 # @importFrom stringr str_remove
-
+#' @keywords internal
 "_PACKAGE"
 
 utils::globalVariables(".")
