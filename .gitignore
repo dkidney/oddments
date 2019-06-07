@@ -8,3 +8,4 @@
 src/*.dll
 src/*.o
 src/*.so
+skeleton/figures
