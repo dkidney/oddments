@@ -1,3 +1,5 @@
+/* Colours ------------------------------------------------------------------------------*/
+
 /* greys */
 :root {
     --grey05: #0D0D0D;
@@ -21,18 +23,36 @@
     --grey95: #F2F2F2;
 }
 
-/* colors */
+/* bootstrap colors */
 :root {
-/*    --bootstrap_blue: #428bca; */
-    --bootstrap_blue: #317eac;
+  --bootstrap_blue:             #428bca; /* #317eac */
+  --bootstrap_blue:             #317eac; 
+  --bootstrap_green:            #5cb85c;
+  --bootstrap_red:              #d9534f;
+  --bootstrap_lightblue:        #5bc0de;
+  --bootstrap_white:            #f9f9f9;
+  --bootstrap_button_blue       #337ab7;
+  --bootstrap_button_green:     #5cb85c;
+  --bootstrap_button_lightblue: #5bc0de;
+  --bootstrap_button_orange:    #f0ad4e;
+}
+
+/* custom colors */
+:root {
     --light_blue: #2fa4e7;
     --ci_red: #C40F11;
+}
+
+/* Variables ------------------------------------------------------------------------------*/
+
+/* colours */
+:root {
     --light_grey: var(--grey60);
     --dark_grey: var(--grey35);
     --very_dark_grey: var(--grey15);
 }
 
-/* variables */
+/* text */
 :root {
     --bg_col: white;
     --body_col: var(--very_dark_grey);
@@ -44,6 +64,8 @@
 /*    --font_family: Century Gothic, sans-serif; */
 }
 
+/* Body ------------------------------------------------------------------------------*/
+
 body {
     background-color: var(--bg_col);
     color: var(--body_col);
@@ -51,7 +73,6 @@ body {
     font-size: 11pt;
     line-height: 1.42857143;
 }
-
 
 /* Header ------------------------------------------------------------------------------*/
 

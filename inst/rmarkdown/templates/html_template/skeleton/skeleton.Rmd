@@ -42,79 +42,123 @@ editor_options:
 runtime: shiny
 ---
 
+*******************************************************************************
+
+## Preamble {-}
+
 ```{r config, include=FALSE}
+# code evaluation -----
 knitr::opts_chunk$set(
-    comment = "##",
+    eval = TRUE
+)
+# text results -----
+knitr::opts_chunk$set(
     echo = TRUE,
-    engine.path = "/usr/local/Cellar/python3/3.7.0/bin/python3",
-    eval = TRUE,
-    message = FALSE,
+    results = 'hold',
+    collapse = FALSE,
     warning = FALSE,
-    
-    # figures
-    dev = "png",
+    message = FALSE
+)
+# code decoration -----
+knitr::opts_chunk$set(
+    tidy = "styler" ,
+    comment = "# ",
+    background = '#F7F7F7'
+)
+# plots -----
+golden_ratio = (1 + sqrt(5)) / 2
+knitr::opts_chunk$set(
+    fig.path = "figures/fig_",
+    fig.show = "hold",
+    dev = "svg", # svg looks better on web pages
+    # dev = c("png", "jpeg"),
     dev.args = list(
         family = "Avenir",
         pointsize = 11
     ),
-    fig.align = "center", 
-    fig.path = "figures/fig_",
-    fig.show = "hold",
-    # fig.dim = c(7, 5),
-    fig.height = 7 * 2 / (1 + sqrt(5)),
+    dpi = 96, # dpi * inches = pixels
     fig.width = 7,
-    out.width = "75%"
+    # fig.height = 7 / golden_ratio,
+    fig.asp = 1 / golden_ratio, # fig.height = fig.width * fig.asp
+    # fig.dim = c(7, 7 / golden_ratio),
+    out.width = "75%",
+    fig.retina = 1,
+    fig.align = "center"
 )
+ggplot2::theme_set(
+    ggplot2::theme_minimal(
+        base_family = knitr::opts_chunk$get("dev.args")$family,
+        base_size = knitr::opts_chunk$get("dev.args")$pointsize,
+        base_line_size = 0.5
+    )
+)
+par(
+    family = knitr::opts_chunk$get("dev.args")$family
+)
+# engines -----
+knitr::opts_chunk$set(
+    engine.path = list(
+        python = "/usr/local/Cellar/python/3.7.3/bin/python3"
+    )
+)
+stopifnot(file.exists(knitr::opts_chunk$get("engine.path")$python))
+# python -----
+# requires reticulate
+knitr::opts_chunk$set(
+    python.reticulate = TRUE
+)
+reticulate::use_python(knitr::opts_chunk$get("engine.path"))
+# paged tables -----
+# when using `df_print: paged` in yaml header
+knitr::opts_chunk$set(
+    max.print = 10, # The number of rows to print.
+    rows.print = 10, # The number of rows to display.
+    cols.print = 10, # The number of columns to display.
+    cols.min.print = 10, # The minimum number of columns to display.
+    pages.print = 10, # The number of pages to display under page navigation.
+    paged.print = TRUE, # When set to FALSE turns off paged tables.
+    rownames.print = TRUE # When set to FALSE turns off row names.
+)
+# option templates -----
 knitr::opts_template$set(
-    # cat_filename = list(echo = FALSE, results = "asis"),
-    cat_file = list(echo = FALSE, comment = "")
+    cat_file = list(eval = TRUE, echo = FALSE, results = "asis")
 )
-
-# knitr::opts_chunk$set(
-#     max.print = 10, # The number of rows to print.
-#     rows.print = 10, # The number of rows to display.
-#     cols.print = 10, # The number of columns to display.
-#     cols.min.print = 10, # The minimum number of columns to display.
-#     pages.print = 10, # The number of pages to display under page navigation.
-#     paged.print = TRUE, # When set to FALSE turns off paged tables.
-#     rownames.print = TRUE # When set to FALSE turns off row names.
-# )
+cat_file = function(x){
+    y = readLines(x, warn = FALSE) %>% paste0(collapse = "\n")
+    paste0("```", tools::file_ext(x), "\n", y, "\n```")
+}
+# package options -----
+# see ?opts_knit
+knitr::opts_knit$set(
+    aliases = c(h = 'fig.height', w = 'fig.width'),
+    width = 80
+)
+# working directory -----
+if (interactive()) {
+    setwd(fs::path_dir(rstudioapi::getActiveDocumentContext()$path))
+}
 ```
 
 ```{css, include=FALSE}
-<!-- additional css code can go here -->
-
+/* additional css code can go here */
 ul {
   list-style-type: square;
 }
-
 .MathJax_Display {
   padding: 0.5em;
   background-color: #eaeff3
 }
 ```
 
-*******************************************************************************
-
-## Preamble {-}
-
 ```{r, r_setup}
-library(magrittr)
-library(tidyverse)
-# library(templates)
+suppressPackageStartupMessages({
+  library(fs)
+  library(magrittr)
+  library(tidyverse)
+})
 options(
     knitr.table.format = "html", # dont need this if using library(kableExtra)
-    stringsAsFactors = FALSE,
-    width = 100
-)
-par(
-    family = knitr::opts_chunk$get("dev.args")$family
-)
-theme_set(
-    theme_bw(
-        base_family = knitr::opts_chunk$get("dev.args")$family,
-        base_size = knitr::opts_chunk$get("dev.args")$pointsize
-    )
+    stringsAsFactors = FALSE
 )
 ```
 
@@ -158,23 +202,35 @@ mtcars %>% DT::datatable()
 
 ```{r}
 mtcars %>% 
-    knitr::kable(
-        format = "html",
-        digits = 5,
-        row.names = TRUE,
-        caption = "A caption",
-        format.args = list(big.mark = ",")
-    ) %>% 
-    kableExtra::kable_styling(
-        full_width = FALSE,
-        bootstrap_options = c("striped", "condensed"),
-        position = "center"
-    ) %>%
-    kableExtra::scroll_box(
-        height = "500px",
-        width = "100%",
-        box_css = "border: 0px;"
-    )
+  knitr::kable(
+    format = "html",
+    digits = 5,
+    row.names = TRUE,
+    caption = "A caption",
+    format.args = list(big.mark = ",")
+  ) %>% 
+  kableExtra::kable_styling(
+    full_width = FALSE,
+    bootstrap_options = c("striped", "condensed"),
+    position = "center",
+    fixed_thead = TRUE,
+    font_size = 11
+  ) %>%
+  kableExtra::row_spec(
+    0,
+    bold = TRUE,
+    color = "white",
+    background = "#337ab7"
+  ) %>%
+  kableExtra::column_spec(
+    1,
+    bold = TRUE
+  ) %>% 
+  kableExtra::scroll_box(
+    height = "500px",
+    width = "100%",
+    box_css = "border: 5px;"
+  )
 ```
 
 
@@ -188,6 +244,25 @@ mtcars %>% ggplot(aes(disp)) + geom_histogram()
 mtcars %>% ggplot(aes(drat)) + geom_histogram()
 mtcars %>% ggplot(aes(qsec)) + geom_histogram()
 ```
+
+*******************************************************************************
+
+# Images
+
+![image](~/.gravatar)
+
+![image](~/.gravatar "asdf")
+
+![image][id]
+
+[id]:~/.gravatar "asdf"
+
+<center>
+![image](~/.gravatar)
+</center>
+
+<img src="~/.gravatar" alt="alt text" title="title" width="40%">
+
 
 *******************************************************************************
 
@@ -212,7 +287,7 @@ mtcars %>% ggplot(aes(disp)) + geom_histogram()
 # Python
 
 ```{r, results='hold'}
-python_engine = knitr::opts_chunk$get("engine.path") %T>% print
+python_engine = knitr::opts_chunk$get("engine.path")$python %T>% print
 eval_python = file.exists(python_engine) %T>% print
 ```
 
@@ -285,7 +360,16 @@ https://bookdown.org/yihui/rmarkdown
 
 *******************************************************************************
 
-# Appendix: .Rprofile {-}
+# Appendix: Print a file {-}
 
-```{r, code=readLines('~/.Rprofile'), opts.label='cat_file'}
+```{r, code=readLines("~/.Rprofile"), opts.label='cat_file'}
 ```
+
+*******************************************************************************
+
+# Appendix: Session info {-}
+
+```{r session_info, include=TRUE, echo=TRUE, results='markup', comment=""}
+devtools::session_info()
+```
+
