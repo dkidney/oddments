@@ -40,6 +40,10 @@ kable2 <- function(x, scroll = FALSE, ...) {
   df <- x %>%
     knitr::kable(
       format = "html",
+      digits = 5,
+      row.names = TRUE,
+      caption = "A caption",
+      format.args = list(big.mark = ","),
       ...
     ) %>%
     kableExtra::kable_styling(
@@ -47,7 +51,7 @@ kable2 <- function(x, scroll = FALSE, ...) {
       bootstrap_options = c("striped", "condensed"),
       position = "center",
       font_size = 11,
-      fixed_thead = TRUE
+      fixed_thead = TRUE # dont need this if using scroll_box
     ) %>%
     kableExtra::row_spec(
       0,
