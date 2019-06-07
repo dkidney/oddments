@@ -46,18 +46,6 @@ TODO
 "message" \%>\% success()
 "message" \%>\% concern()
 
-item("item", col = "blue")
-item("item", col = "black")
-item("item", col = "blue")
-item("item", col = "cyan")
-item("item", col = "green")
-item("item", col = "magenta")
-item("item", col = "red")
-item("item", col = "white")
-item("item", col = "yellow")
-item("item", col = "grey")
-item("item", col = "silver")
-
 # itemize -----
 
 f1 <- function() {
