@@ -5,6 +5,7 @@
 "message" %>% item()
 "message" %>% success()
 "message" %>% concern()
+"message" %>% panic()
 
 # itemize -----
 
@@ -20,6 +21,7 @@ f2 <- function() {
     Sys.sleep(0.001)
     warning("whoops")
     warning("not again...")
+    stop("this is bad!")
     print(10)
     return(100)
 }

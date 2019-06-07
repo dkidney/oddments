@@ -25,28 +25,35 @@ heading <- function(...) {
 #' @name bullet
 #' @export
 bullet <- function(x = NULL, ...) {
-    item_(x = x, ..., type = "bullet")
+    info(x = x, ..., type = "bullet")
 }
 
 #' @rdname progress
 #' @name item
 #' @export
 item <- function(x = NULL, ...) {
-    item_(x = x, ..., type = "item")
+    info(x = x, ..., type = "item")
 }
 
 #' @rdname progress
 #' @name success
 #' @export
 success <- function(x = NULL, ...) {
-    item_(x = x, ..., type = "success")
+    info(x = x, ..., type = "success")
 }
 
 #' @rdname progress
 #' @name concern
 #' @export
 concern <- function(x = NULL, ...) {
-    item_(x = x, ..., type = "concern")
+    info(x = x, ..., type = "concern")
+}
+
+#' @rdname progress
+#' @name panic
+#' @export
+panic <- function(x = NULL, ...) {
+    info(x = x, ..., type = "panic")
 }
 
 #' @rdname progress
@@ -62,7 +69,9 @@ itemize <- function(.f, ..., .message = NULL, .timer = TRUE) {
         n1 <- m1 %>% str_length()
         cat(m1, "\r")
         start_time <- Sys.time()
-        result <- quietly(.f)(...)
+        # browser()
+        result <- purrr::safely(quietly(.f))(...)
+        result = c(result$result, list(error = result$error))
         finish_time <- Sys.time()
         m2 <- .message
         n2 <- nchar(m2)
@@ -78,10 +87,14 @@ itemize <- function(.f, ..., .message = NULL, .timer = TRUE) {
             }
         }
         m2 %<>% str_pad(max(n1, n2 + 3), "right", " ")
-        if (length(result$warnings) > 0) {
+        if (length(result$warnings) > 0 || length(result$error) > 0) {
             item(m2)
         } else {
             success(m2)
+        }
+        if (length(result$error) > 0) {
+            panic(result$error$message)
+            stop(call. = FALSE)
         }
         if (length(result$warnings) > 0) {
             for (i in seq_along(result$warnings)) {
@@ -99,7 +112,11 @@ itemize <- function(.f, ..., .message = NULL, .timer = TRUE) {
     }
 }
 
-item_ <- function(x = NULL, ..., type = c("item", "bullet", "success", "concern")) {
+safely_and_quietly = function(.f, otherwise = NULL, quiet = TRUE){
+    safely(quietly(.f), otherwise = NULL, quiet = TRUE)
+}
+
+info <- function(x = NULL, ..., type = c("item", "bullet", "success", "concern","panic")) {
     type <- match.arg(type)
     dots <- list(...)
     dots$x <- str_c(" ", x)
@@ -123,6 +140,11 @@ item_ <- function(x = NULL, ..., type = c("item", "bullet", "success", "concern"
         dots$bullet %<>% replace_null("square_small_filled")
         dots$bullet_col %<>% replace_null("yellow")
         dots$col %<>% replace_null("yellow")
+    }
+    if (type == "panic") {
+        dots$bullet %<>% replace_null("cross")
+        dots$bullet_col %<>% replace_null("red")
+        dots$col %<>% replace_null("red")
     }
     do.call(FUN, dots)
 }
