@@ -7,6 +7,7 @@
 \alias{item}
 \alias{success}
 \alias{concern}
+\alias{panic}
 \alias{itemize}
 \title{Progress messages}
 \usage{
@@ -19,6 +20,8 @@ item(x = NULL, ...)
 success(x = NULL, ...)
 
 concern(x = NULL, ...)
+
+panic(x = NULL, ...)
 
 itemize(.f, ..., .message = NULL, .timer = TRUE)
 }
@@ -45,6 +48,7 @@ TODO
 "message" \%>\% item()
 "message" \%>\% success()
 "message" \%>\% concern()
+"message" \%>\% panic()
 
 # itemize -----
 
@@ -60,6 +64,7 @@ f2 <- function() {
     Sys.sleep(0.001)
     warning("whoops")
     warning("not again...")
+    stop("this is bad!")
     print(10)
     return(100)
 }
