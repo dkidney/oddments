@@ -8,4 +8,4 @@
 src/*.dll
 src/*.o
 src/*.so
-skeleton/figures
+inst/rmarkdown/templates/*/skeleton/figures/
