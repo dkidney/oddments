@@ -17,6 +17,8 @@ is_int_vector <- function(x) {
     rlang::is_integerish(x) && is.null(dim(x))
 }
 
+# is_intish -----
+
 is_lgl_scalar <- function(x) {
     is.logical(x) && length(x) == 1
 }
@@ -49,15 +51,51 @@ is_proportion_vector <- function(x) {
     is_num_vector(x) && all(x <= 0) && all(x >= 1)
 }
 
+# is_dataframe -----
+
+# is_macbook -----
+# is_macbook = function(){
+#     get_hostname() %>% str_detect("MacBook")
+# }
+
+# is_true -----
+# is_true = function(x){
+#     x %in% TRUE
+# }
+
+# is_false -----
+# is_false = function(x){
+#     x %in% FALSE
+# }
+
+# is_not_true -----
+# is_not_true = function(x){
+#     !x %in% TRUE
+# }
+
+# is_not_false -----
+# is_not_false = function(x){
+#     !x %in% FALSE
+# }
+
 is_one_of <- function(x, values) {
     length(x) == 1 && x %in% values
+}
+
+# has_* -----
+
+has_internet <- function() {
+  content <- try(suppressWarnings({
+    readLines("http://www.r-project.org", n = 1)
+  }), TRUE)
+  !inherits(content, "try-error")
 }
 
 contains_all <- function(x, values) {
     all(x %in% values)
 }
 
-# check_is_* -----
+# check_* -----
 
 check_is_chr_scalar <- function(x) {
     if (!is_chr_scalar(x)) stop("expecting a character scalar", call. = FALSE)
@@ -144,6 +182,17 @@ check_is_identical = function(x, y){
         stop("expecting ", y, call. = FALSE)
     }
 }
+
+# check_dir_exists -----
+
+# check_file_exists -----
+# check_file_exists = function(path){
+#     expanded = path %>%
+#         check_is_scalar_character %>%
+#         path.expand
+#     if(!file.exists(expanded)) stop("can't find ", expanded)
+#     invisible(path)
+# }
 
 # helpers -----
 

@@ -12,3 +12,4 @@ send_query = function(query, con, verbose = TRUE){
 view_table = function(table_name, con){
     try(dplyr::tbl(con, table_name))
 }
+

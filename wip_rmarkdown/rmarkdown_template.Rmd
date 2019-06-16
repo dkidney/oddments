@@ -1,0 +1,115 @@
+---
+title: |
+  | TITLE LINE 1:
+  | *title line 2*
+author: Darren Kidney
+date: '`r format(Sys.time(), "%d %B %Y")`'
+output:
+  html_document:
+    number_sections: yes
+    toc: yes
+    toc_depth: 2
+    css: my_css.css
+  pdf_document:
+    number_sections: yes
+    toc: yes
+    toc_depth: 2
+  word_document:
+    highlight: tango
+    reference: rmarkdown_reference_word_document.docx
+    toc: yes
+    toc_depth: 2
+subtitle: Subtitle
+---
+
+```{r setup, include=FALSE}
+suppressPackageStartupMessages({
+    library(knitr)
+    library(magrittr)
+    library(forcats)
+    library(stringr)
+    library(lubridate)
+    library(tidyverse)
+})
+
+# knitr options
+opts_chunk$set(
+    cache       = FALSE,
+    collapse    = TRUE,
+    comment     = "#",
+    echo        = TRUE,
+    error       = FALSE,
+    fig.align   = 'center',
+    fig.height  = 4,
+    fig.width   = 5,
+    fig.path    = 'figures/fig_',
+    fig.show    = 'hold',
+    message     = FALSE,
+    prompt      = TRUE,
+    strip.white = TRUE,
+    warning     = FALSE
+)
+
+# global options
+options(
+    digits = 4,
+    scipen = 5,
+    stringsAsFactors = FALSE,
+    tibble.print_min = 4L, 
+    tibble.print_max = 4L
+)
+```
+
+# Heading 1
+
+Normal text.
+
+* Bullet point
+
+`verbatim text`
+
+**bold**
+
+*italic*
+
+## Heading 2
+
+### Heading 3
+
+#### Heading 4
+
+##### pagebreak
+
+Link to the Creditinfo website:
+
+<http://creditinfo.com>
+
+Here is some R code:
+
+```{r}
+"a string"
+x = rnorm(100)
+mean(x)
+```
+
+Here is a kable
+
+```{r}
+data.frame(x = month.abb[1:5], y = 1:5) %>% 
+    set_rownames(letters[1:5]) %>% 
+    kable
+```
+
+Here is a plot
+
+```{r, fig.cap = 'a caption'}
+hist(x)
+```
+
+Here is a formula
+
+$$ fahrenheit = celsius \times \frac{5}{9} + 32 $$
+
+
+
+
