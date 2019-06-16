@@ -1,11 +1,11 @@
 \dontrun{
 
-"message" %>% heading()
-"message" %>% bullet()
-"message" %>% item()
-"message" %>% success()
-"message" %>% concern()
-"message" %>% panic()
+heading("a", " message")
+bullet("a", " message")
+item("a", " message")
+success("a", " message")
+concern("a", " message")
+panic("a", " message")
 
 # itemize -----
 

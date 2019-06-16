@@ -16,44 +16,42 @@ NULL
 #' @name heading
 #' @export
 heading <- function(...) {
-    dots <- list(...)
-    dots$col %<>% replace_null("cyan")
-    dots %>% do.call(what = cli::cat_rule)
+    cli::cat_rule(collapse_chr(...), col = "cyan")
 }
 
 #' @rdname progress
 #' @name bullet
 #' @export
-bullet <- function(x = NULL, ...) {
-    info(x = x, ..., type = "bullet")
+bullet <- function(...) {
+    info(collapse_chr(...), type = "bullet")
 }
 
 #' @rdname progress
 #' @name item
 #' @export
-item <- function(x = NULL, ...) {
-    info(x = x, ..., type = "item")
+item <- function(...) {
+    info(collapse_chr(...), type = "item")
 }
 
 #' @rdname progress
 #' @name success
 #' @export
-success <- function(x = NULL, ...) {
-    info(x = x, ..., type = "success")
+success <- function(...) {
+    info(collapse_chr(...), type = "success")
 }
 
 #' @rdname progress
 #' @name concern
 #' @export
-concern <- function(x = NULL, ...) {
-    info(x = x, ..., type = "concern")
+concern <- function(...) {
+    info(collapse_chr(...), type = "concern")
 }
 
 #' @rdname progress
 #' @name panic
 #' @export
-panic <- function(x = NULL, ...) {
-    info(x = x, ..., type = "panic")
+panic <- function(...) {
+    info(collapse_chr(...), type = "panic")
 }
 
 #' @rdname progress
@@ -71,7 +69,7 @@ itemize <- function(.f, ..., .message = NULL, .timer = TRUE) {
         start_time <- Sys.time()
         # browser()
         result <- purrr::safely(quietly(.f))(...)
-        result = c(result$result, list(error = result$error))
+        result <- c(result$result, list(error = result$error))
         finish_time <- Sys.time()
         m2 <- .message
         n2 <- nchar(m2)
@@ -112,15 +110,28 @@ itemize <- function(.f, ..., .message = NULL, .timer = TRUE) {
     }
 }
 
-safely_and_quietly = function(.f, otherwise = NULL, quiet = TRUE){
-    safely(quietly(.f), otherwise = NULL, quiet = TRUE)
+collapse_chr <- function(..., .sep = "", .quotes = FALSE) {
+    x <- list(...) %>% unlist(FALSE, FALSE)
+    if(is.character(x) && .quotes){
+        x %<>% str_c("'", ., "'")
+    }
+    x %<>% str_c(collapse = .sep)
+    if (length(x) == 0) return("")
+    x
 }
 
-info <- function(x = NULL, ..., type = c("item", "bullet", "success", "concern","panic")) {
+commas = function(..., .quotes = TRUE) {
+    collapse_chr(..., .sep = ", ", .quotes = .quotes)
+}
+
+safely_and_quietly <- function(.f, otherwise = NULL, quiet = TRUE) {
+    purrr::safely(quietly(.f), otherwise = NULL, quiet = TRUE)
+}
+
+info <- function(x = NULL, ..., type = c("item", "bullet", "success", "concern", "panic")) {
     type <- match.arg(type)
     dots <- list(...)
     dots$x <- str_c(" ", x)
-    FUN <- cli::cat_bullet
     if (type == "bullet") {
         dots$bullet %<>% replace_null("bullet")
         dots$bullet_col %<>% replace_null("white")
@@ -146,5 +157,6 @@ info <- function(x = NULL, ..., type = c("item", "bullet", "success", "concern",
         dots$bullet_col %<>% replace_null("red")
         dots$col %<>% replace_null("red")
     }
-    do.call(FUN, dots)
+    do.call(cli::cat_bullet, dots)
+    invisible(list(info = x, type = type))
 }
