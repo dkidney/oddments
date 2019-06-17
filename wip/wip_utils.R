@@ -1,14 +1,19 @@
 
+change_timezone = function(x, tz = "Europe/London"){
+    stopifnot(inherits(x, "POSIXct"))
+    x %>% 
+        format(tz = tz, usetz = TRUE) %>%
+        as.POSIXct(tz = tz)
+}
 
 # path of active file
 path_active = function(){
     rstudioapi::getActiveDocumentContext()$path
 }
 
-
 format_int = function(x){
     check_is_intish(x)
-    format(floor(as.numeric(x)), scientific= FALSE, trim = TRUE)
+    format(floor(as.numeric(x)), scientific = FALSE, trim = TRUE)
 }
 
 # ---------------------------------------------------------------------------- #
