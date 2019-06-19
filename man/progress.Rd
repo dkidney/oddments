@@ -27,15 +27,13 @@ itemize(.f, ..., .message = NULL, .timer = TRUE)
 }
 \arguments{
 \item{...}{arguments that get passed to \link[cli]{cat_bullet} (or
-\link[cli]{cat_bullet} for \code{heading})}
+\link[cli]{cat_rule} for \code{heading})}
 
 \item{.f}{TODO}
 
 \item{.message}{TODO}
 
 \item{.timer}{TODO}
-
-\item{x}{\link{string} progress message}
 }
 \description{
 TODO

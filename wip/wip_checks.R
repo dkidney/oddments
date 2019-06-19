@@ -84,13 +84,6 @@ is_one_of <- function(x, values) {
 
 # has_* -----
 
-has_internet <- function() {
-  content <- try(suppressWarnings({
-    readLines("http://www.r-project.org", n = 1)
-  }), TRUE)
-  !inherits(content, "try-error")
-}
-
 contains_all <- function(x, values) {
     all(x %in% values)
 }

@@ -6,6 +6,8 @@
 ^cran-comments\.md$
 ^data-raw$
 ^wip$
+^wip_rcpp$
+^wip_rmarkdown$
 ^LICENSE\.md$
 ^README-.*\.png$
 ^README\.Rmd$

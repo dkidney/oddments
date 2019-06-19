@@ -2,9 +2,8 @@
 #' @name progress
 #' @title Progress messages
 #' @description TODO
-#' @param x [string] progress message
 #' @param ... arguments that get passed to \link[cli]{cat_bullet} (or
-#'   \link[cli]{cat_bullet} for \code{heading})
+#'   \link[cli]{cat_rule} for \code{heading})
 # @details TODO
 #' @importFrom stringr str_length
 #' @importFrom stringr str_pad
