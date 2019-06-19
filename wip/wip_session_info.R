@@ -44,12 +44,14 @@
 #' }
 #' @export
 session_info = function(){
-    now("Europe/London") %>% format(usetz = TRUE) %>% cat("\n")
-    cat("User:", user(), "\n")
-    cat("Nodename:", nodename(), "\n")
-    cat("Platform:", R.version[["platform"]], "\n")
-    cat("OS:", sessionInfo()[["running"]], "\n")
-    cat("R version: ", R.version[["major"]], ".", R.version[["minor"]], "\n", sep = "")
+    lubridate::now("Europe/London") %>% format(usetz = TRUE) %>% cat("\n")
+    cat("user:", user(), "\n")
+    cat("nodename:", nodename(), "\n")
+    cat("platform:", R.version[["platform"]], "\n")
+    cat("os:", sessionInfo()[["running"]], "\n")
+    cat("R ", as.character(getRversion()), "\n", sep = "")
+    cat("Rstudio ", as.character(rstudioapi::getVersion()), "\n", sep = "")
+    cat("Pandoc ", as.character(rmarkdown::pandoc_version()), "\n", sep = "")
     cat("Interactive:", interactive(), "\n")
     # loaded packages
     attached = attached_packages()
@@ -72,7 +74,7 @@ session_info = function(){
 attached_packages = function(){
     attached = sessionInfo()[["otherPkgs"]]
     if(is.null(attached)) return(NULL)
-    data_frame(
+    tibble(
         name = attached %>% names,
         version = attached %>% map_chr("Version")
     )
@@ -91,7 +93,7 @@ loaded_packages = function(){
 #' @export
 installed_packages = function(){
     installed = installed.packages()
-    data_frame(name = rownames(installed),
+    tibble(name = rownames(installed),
                version = installed[, "Version"])
 }
 
