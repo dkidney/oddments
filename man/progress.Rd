@@ -13,15 +13,15 @@
 \usage{
 heading(...)
 
-bullet(x = NULL, ...)
+bullet(...)
 
-item(x = NULL, ...)
+item(...)
 
-success(x = NULL, ...)
+success(...)
 
-concern(x = NULL, ...)
+concern(...)
 
-panic(x = NULL, ...)
+panic(...)
 
 itemize(.f, ..., .message = NULL, .timer = TRUE)
 }
@@ -29,13 +29,13 @@ itemize(.f, ..., .message = NULL, .timer = TRUE)
 \item{...}{arguments that get passed to \link[cli]{cat_bullet} (or
 \link[cli]{cat_bullet} for \code{heading})}
 
-\item{x}{\link{string} progress message}
-
 \item{.f}{TODO}
 
 \item{.message}{TODO}
 
 \item{.timer}{TODO}
+
+\item{x}{\link{string} progress message}
 }
 \description{
 TODO
@@ -43,12 +43,12 @@ TODO
 \examples{
 \dontrun{
 
-"message" \%>\% heading()
-"message" \%>\% bullet()
-"message" \%>\% item()
-"message" \%>\% success()
-"message" \%>\% concern()
-"message" \%>\% panic()
+heading("a", " message")
+bullet("a", " message")
+item("a", " message")
+success("a", " message")
+concern("a", " message")
+panic("a", " message")
 
 # itemize -----
 
