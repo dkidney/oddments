@@ -1,5 +1,5 @@
 
-#' @rdname check_r_version
+#' @rdname check_versions
 #' @name check_r_version
 #' @title Check R version
 #' @description Check to see if a later R version is available for download.
@@ -66,7 +66,7 @@ check_r_version <- function(check_for_updates = TRUE) {
     invisible()
 }
 
-#' @rdname check_r_version
+#' @rdname check_versions
 #' @name check_rstudio_version
 #' @export
 check_rstudio_version <- function(check_for_updates = TRUE) {
