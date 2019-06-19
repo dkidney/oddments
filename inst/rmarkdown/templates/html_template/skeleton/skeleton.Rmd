@@ -393,7 +393,10 @@ https://bookdown.org/yihui/rmarkdown
 
 # Appendix: Print a file {-}
 
-```{r, code=readLines("~/.Rprofile"), opts.label='cat_file'}
+<!-- ```{r, code=readLines("~/.Rprofile"), opts.label='cat_file'} -->
+<!-- ``` -->
+```{r, opts.label="cat_file"}
+cat_file("~/.Rprofile")
 ```
 
 *******************************************************************************
