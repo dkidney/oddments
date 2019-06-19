@@ -1,10 +1,163 @@
 
-change_timezone = function(x, tz = "Europe/London"){
-    stopifnot(inherits(x, "POSIXct"))
-    x %>% 
-        format(tz = tz, usetz = TRUE) %>%
-        as.POSIXct(tz = tz)
+#' Source all the .R files in a folder
+#'
+#' Loads one or more packages into the current session. Any packages that aren't already installed will be automatically downloaded and then loaded into the current session.
+#'
+#' @param folder.path the path of the folder in which the .R files are stored
+#' @export
+
+source.folder <- function(folder.path){
+
+    # make a character vector with the names of all the files in the folder
+    all.files <- list.files(folder.path)
+
+    # extract only those files with the .r extension
+    r.files <- all.files[grep("\\.[r,R]$", all.files)]
+
+    # source all the .r files
+    for(file in r.files) source(file.path(folder.path, file))
+
 }
+#
+#' @rdname which_first
+#' @name which_first
+#' @title First or last match in a vector
+#' @description Compute the first or last \code{TRUE} or \code{FALSE} element in a logical
+#'   vector.
+#' @param x logical vector
+#' @param what logical scalar
+#' @return Returns an integer scalar representing the position of the first/last match in
+#'   \code{x}. If there are no matches, then \code{NA_integer_} is returned.
+#' @examples
+#' x = c(NA,T,T,F,F,F,T)
+#'
+#' which_first(x, TRUE)
+#' which_first(x, FALSE)
+#' which_last(x, TRUE)
+#' which_last(x, FALSE)
+#'
+#' y = c(NA,T,T,NA,NA,T)
+#'
+#' which_first(y, TRUE)
+#' which_first(y, FALSE)
+#' which_last(y, TRUE)
+#' which_last(y, FALSE)
+#' @export
+
+which_first = function(x, what = TRUE){
+    if(!is_logical(x)) stop("x must be a logical vector")
+    if(!is_scalar_logical(what)) stop("what must be a logical scalar")
+    if(!any(x == what, na.rm = TRUE)){
+        warning("no matches found for what=", what, " in x")
+        return(NA_integer_)
+    }
+    if(what){
+        min(which(x))
+    }else{
+        min(which(!x))
+    }
+}
+
+#' @rdname which_first
+#' @name which_last
+#' @export
+
+which_last = function(x, what = TRUE){
+    length(x) - which_first(rev(x), what = what)
+}
+
+#' Inverse square root of a matrix
+#'
+#' Description.
+#'
+#' Details.
+#'
+#' @param x a square matrix
+#' @return Returns a matrix A^(-1/2)
+#' @author Darren Kidney \email{darrenkidney@@googlemail.com}
+#' @examples
+#' # Example:
+#'
+#' A = matrix(c(2,-1,0,-1,2,-1,0,-1,2), nc=3) ; A
+#'
+#' inv.sqrt.mat(A)
+#'
+#' @export
+
+inv.sqrt.mat <- function(x){
+
+    A.eigen <- eigen(as.matrix(A))
+
+    if(all(A.eigen$values>0)){
+
+        A.sqrt <- A.eigen$vectors %*% ( diag(sqrt(A.eigen$values)) %*% t(A.eigen$vectors) )
+
+        } else {
+
+            stop("Matrix must be positive semi-definite")
+
+        }
+
+    return(solve(A.sqrt))
+
+}
+
+my.model.matrix = function(formula, data){
+
+    terms = colnames(attr(terms(formula), "factors")) ; terms
+
+    X = sapply(terms, function(i){ # i = terms[3] ; i
+
+        if(grepl(":", i)){
+
+            j = strsplit(i, ":")[[1]] ; j
+
+            apply(data[,j],1,prod)
+
+        }else{
+
+            data[,terms == i]
+
+        }
+
+    })
+
+    colnames(X) = terms
+
+    return(X)
+
+}
+
+if(0){
+
+    form = ~ x * z
+
+    n = 100000
+
+    data = data.frame(a = 1:n, b = 1:n, c = 1:n, x = 1:n, z = n:1)
+
+    X = model.matrix(form, data) ; head(X) ; dim(X)
+
+    X = my.model.matrix(form, data) ; head(X) ; dim(X)
+
+
+
+}
+
+num2col = function(x, ncol = 10, palette = heat.colors){
+    breaks = seq(min(x), max(x), length = ncol + 1)
+    i = cut(x, breaks = breaks, include.lowest = TRUE)
+    palette(ncol)[i]
+}
+
+
+if(0){
+    data = expand.grid(x = seq(-2, 2, length = 20),
+                       y = seq(-2, 2, length = 20))
+    data$z = dnorm(data$x) * dnorm(data$y)
+    plot(data$x, data$y, col = num2col(data$z), pch = 15, cex = 2)
+}
+
 
 # path of active file
 path_active = function(){
