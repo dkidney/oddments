@@ -119,8 +119,12 @@ collapse_chr <- function(..., .sep = "", .quotes = FALSE) {
     x
 }
 
-commas = function(..., .quotes = TRUE) {
-    collapse_chr(..., .sep = ", ", .quotes = .quotes)
+commas = function(..., .quotes = TRUE, wrap = NULL) {
+    x = collapse_chr(..., .sep = ", ", .quotes = .quotes)
+    if(!is.null(wrap)){
+        x %<>% stringr::str_wrap(wrap)   
+    }
+    x
 }
 
 safely_and_quietly <- function(.f, otherwise = NULL, quiet = TRUE) {
