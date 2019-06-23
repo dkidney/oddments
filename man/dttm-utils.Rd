@@ -4,14 +4,17 @@
 \alias{dttm-utils}
 \alias{tz_get}
 \alias{tz_set}
+\alias{tz_conv}
 \title{Date-time utility functions}
 \usage{
 tz_get(x)
 
 tz_set(x, tz)
+
+tz_conv(x, tz)
 }
 \arguments{
-\item{x}{[POSIXct] object - i.e. a date-time (see \link[base]{DateTimeClasses})}
+\item{x}{[\link[base]{POSIXct} or \link[base]{POSIXlt}] object}
 
 \item{tz}{[string] the desired time zone (must be one of
 \link[base]{OlsonNames})}
@@ -21,45 +24,20 @@ Returns a
 }
 \description{
 \itemize{
-\item \strong{\code{tz_get}} - extracts the timezone attribute from a date-time
-object and returns it as a string
-\item \strong{\code{tz_set}} - changes the timezone attribute of a date-time object,
-updates the time and returns a \link[base]{POSIXct} object
+\item \strong{\code{tz_get}} - extracts the timezone
+\item \strong{\code{tz_set}} - changes the timezone
+\item \strong{\code{tz_conv}} - changes the timezone and the clock time
 }
+These function are just wrappers for \link[lubridate]{tz}, \link[lubridate]{force_tz}
+and \link[lubridate]{with_tz} but I find their names more intuitive and easier to
+remember than the \pkg{lubridate} funtions.
 }
 \examples{
 \dontrun{
 
-library(tidyverse)
-
-# get the current local time and time zone
 (x = Sys.time())
 tz_get(x)
-
-# get the time at the desired time zone
-tz = "Asia/Kathmandu"
-(y = tz_set(x, tz))
-tz_get(y)
-
-# comparison of different methods
-
-tests = tibble(test = list(
-    lubridate::`tz<-`(x, tz), # updates the time zone but not the time
-    lubridate::force_tz(x, tz),  # updates the time zone but not the time
-    as.POSIXct(x, tz = tz), # doen't update the time zone or the time
-    as.POSIXlt(x, tz = tz), # updates the time zone and the time but changes the class
-    as.POSIXct(format(x, tz = tz, usetz = TRUE), tz = tz), # inaccurately changes the time
-    as.POSIXct(as.POSIXlt(x, tz = tz)), # does the job
-    tz_set(x, tz) # this is just a wrapper for the previous method
-))
-
-tests \%>\%
-    mutate(
-        tz    = test \%>\% map_lgl(~isTRUE(try(identical(tz_get(.x), !!tz)))),
-        class = test \%>\% map_lgl(~isTRUE(try(identical(class(.x), class(x))))),
-        time  = test \%>\% map_lgl(~isTRUE(try(as.numeric(difftime(.x, x)) == 0)))
-    )
-
-
+tz_set(x, "Asia/Kathmandu")
+tz_conv(x, "Asia/Kathmandu")
 }
 }

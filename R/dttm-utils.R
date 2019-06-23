@@ -4,12 +4,14 @@
 #' @title Date-time utility functions
 #' @description
 #' \itemize{
-#'   \item \strong{\code{tz_get}} - extracts the timezone attribute from a date-time
-#'   object and returns it as a string
-#'   \item \strong{\code{tz_set}} - changes the timezone attribute of a date-time object,
-#'   updates the time and returns a \link[base]{POSIXct} object
+#'   \item \strong{\code{tz_get}} - extracts the timezone
+#'   \item \strong{\code{tz_set}} - changes the timezone
+#'   \item \strong{\code{tz_conv}} - changes the timezone and the clock time
 #' }
-#' @param x \[POSIXct\] object - i.e. a date-time (see \link[base]{DateTimeClasses})
+#' These function are just wrappers for \link[lubridate]{tz}, \link[lubridate]{force_tz}
+#' and \link[lubridate]{with_tz} but I find their names more intuitive and easier to
+#' remember than the \pkg{lubridate} funtions.
+#' @param x \[\link[base]{POSIXct} or \link[base]{POSIXlt}\] object
 #' @param tz \[string\] the desired time zone (must be one of
 #'   \link[base]{OlsonNames})
 #' @return Returns a
@@ -21,15 +23,26 @@ NULL
 #' @export
 tz_get = function(x){
     stopifnot(length(x) == 1 && inherits(x, c("POSIXct", "POSIXlt")))
-    attr(as.POSIXlt(x[1]), "tzone")[[1]]
+    # attr(as.POSIXlt(x[1]), "tzone")[[1]]
+    lubridate::tz(x)
 }
 
 #' @rdname  dttm-utils
 #' @name tz_set
 #' @export
 tz_set = function(x, tz){
-    stopifnot(length(x) == 1 && inherits(x, "POSIXct"))
+    stopifnot(length(x) == 1 && inherits(x, c("POSIXct", "POSIXlt")))
     stopifnot(length(tz) == 1 && tz %in% OlsonNames())
-    as.POSIXct(as.POSIXlt(x, tz = tz))
+    lubridate::force_tz(x, tz)
 }
+
+#' @rdname  dttm-utils
+#' @name tz_conv
+#' @export
+tz_conv = function(x, tz){
+    stopifnot(length(x) == 1 && inherits(x, c("POSIXct", "POSIXlt")))
+    # as.POSIXct(as.POSIXlt(x, tz = tz))
+    lubridate::with_tz(x, tz)
+}
+
 
