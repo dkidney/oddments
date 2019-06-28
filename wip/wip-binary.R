@@ -1,4 +1,3 @@
-
 #' @rdname binary
 #' @name is_binary
 #' @title ???

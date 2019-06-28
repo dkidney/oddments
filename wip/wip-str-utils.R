@@ -30,3 +30,28 @@ str_trunc_sep = function(string, width = 20, sep = ",", ellipsis = "..."){
         return(str)
     }) %>% unname
 }
+
+# helpers -----
+
+collapse_values <- function(x) {
+    if (is_chr_vector(x)) {
+        paste0("'", paste0(x, collapse = "', '"), "'")
+    } else {
+        paste0(x, collapse = ", ")
+    }
+}
+
+cat_values <- function(x) {
+    x_chr <- x
+    if (is.character(x)) {
+        x_chr %<>%
+            str_c("'", ., "'")
+    }
+    if (length(x) > 1) {
+        x_chr %<>%
+            str_c(collapse = ", ") %>%
+            str_c("c(", ., ")")
+    }
+    x_chr
+}
+
