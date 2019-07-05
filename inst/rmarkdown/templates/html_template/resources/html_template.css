@@ -26,7 +26,6 @@
 /* bootstrap colors */
 :root {
   --bootstrap_blue:             #428bca; /* #317eac */
-  --bootstrap_blue:             #317eac; 
   --bootstrap_green:            #5cb85c;
   --bootstrap_red:              #d9534f;
   --bootstrap_lightblue:        #5bc0de;
@@ -37,10 +36,19 @@
   --bootstrap_button_orange:    #f0ad4e;
 }
 
+/* misc colors */
+/* Tomato */
+/* Orange */
+/* DodgerBlue */
+/* MediumSeaGreen */
+/* Gray */
+/* SlateBlue */
+/* Violet */
+/* LightGray */
+
 /* custom colors */
 :root {
     --light_blue: #2fa4e7;
-    --ci_red: #C40F11;
 }
 
 /* Variables ------------------------------------------------------------------------------*/
@@ -57,7 +65,7 @@
     --bg_col: white;
     --body_col: var(--very_dark_grey);
     --heading_col: var(--bootstrap_blue);
-/*    --heading_col: var(--ci_red); */
+/*    --heading_col: var(--bootstrap_red); */
 /*    --font_family: Avenir, sans-serif; */
 /*    --font_family: Avenir; */
     --font_family: Helvetica Neue, Helvetica, Arial, sans-serif;
