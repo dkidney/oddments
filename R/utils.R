@@ -24,6 +24,7 @@ col2hex <- function(x) {
 #'   \code{rlang::\link[rlang]{\%||\%}}.
 #' @param x input value
 #' @param replacement default replacement value if \code{x} is \code{NULL}
+#' @importFrom rlang %||%
 #' @export
 #' @examples
 #' x <- NULL
@@ -31,21 +32,7 @@ col2hex <- function(x) {
 #' x %>% replace_null(10)
 #' y %>% replace_null(10)
 replace_null <- function(x, replacement = NULL) {
-  rlang::`%||%`(x, replacement)
-}
-
-# -------------------------------------------------------------------------------------- #
-
-#' @title Round digits and convert to character
-#' @description A pipe-friendly wrapper for a specific use case of \link[base]{sprintf}.
-#' @param x numeric vector
-#' @param digits integer indicating the number of decimal places
-#' @export
-#' @examples
-#' sprintf("%.3f", pi)
-#' pi %>% round_chr(3)
-round_chr <- function(x, digits = 0) {
-  sprintf(paste0("%.", digits, "f"), x)
+  x %||% replacement
 }
 
 # -------------------------------------------------------------------------------------- #
