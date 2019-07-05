@@ -45,4 +45,27 @@ tz_conv = function(x, tz){
     lubridate::with_tz(x, tz)
 }
 
+# @title Convert unix time to datetime
+# @description Wrapper for \link[base]{as.POSIXct.numeric} using \code{origin =
+#   "1970-01-01"}. Assumes units are in seconds.
+#
+# \url{https://en.wikipedia.org/wiki/Unix_time}
+#
+# \url{https://www.epochconverter.com}
+# @param x numeric vector
+# @param tz time zone
+# @export
+# @examples
+# \dontrun{
+#
+# convert_unix_time(0)
+# convert_unix_time(1000000000)
+# convert_unix_time(1e9)
+#
+# tz = "Europe/London"
+# lubridate::now(tz) %>% as.numeric %>% convert_unix_time(tz)
+# }
+convert_unix_time = function(x, tz = "Europe/London"){
+    as.POSIXct.numeric(x, tz = tz, origin = "1970-01-01")
+}
 
