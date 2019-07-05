@@ -1,13 +1,18 @@
+#' @rdname function-utils
+#' @name function-utils
+#' @title Function utils
+#' @description
+#' \itemize{
+#'   \item \code{capture_args()} - returns a list of all argument values supplied to the
+#'   caller function, including the default argument values that were not specified in the
+#'   call plus and any additional arguments passed via \link[base]{dots}.
+#'   (\link[base]{match.call} ignores default arguments)
+#' }
+NULL
 
-#' @title Capture caller function argument values
-#' @description Get a list of all argument values for the caller function, including
-#'   default argument values and any additional arguments passed via \link[base]{dots}.
-#'
-#' I wrote this function because \link[base]{match.call} doesn't return default argument
-#' values and I couldn't find an alternative that did in any other package.
-#' @export
+#' @rdname function-utils
+#' @name capture_args
 #' @examples
-#' \dontrun{
 #'
 #' f <- function(a = 1, b = 2, c = 3, ...) as.list(base::match.call()[-1])
 #' g <- function(a = 1, b = 2, c = 3, ...) oddments::capture_args()
@@ -21,7 +26,6 @@
 #' f(a = 11, b = 22, c = 33, 44)
 #' g(a = 11, b = 22, c = 33, 44)
 #' }
-#'
 capture_args <- function() {
     sf <- sys.function(sys.parent())
     sc <- sys.call(sys.parent())
@@ -34,4 +38,9 @@ capture_args <- function() {
     defs <- defs[setdiff(def_names, arg_names)]
     args <- c(args, defs)
     args[c(def_names, dot_names)]
+}
+
+# TODO - needs more work...
+safely_and_quietly <- function(.f, otherwise = NULL, quiet = TRUE) {
+    purrr::safely(quietly(.f), otherwise = NULL, quiet = TRUE)
 }
