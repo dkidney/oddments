@@ -1,6 +1,6 @@
 
-#' @rdname pkg_functions
-#' @name pkg_functions
+#' @rdname pkg-utils
+#' @name pkg-utils
 #' @title Package utility functions
 #' @description
 #' \describe{
@@ -57,9 +57,9 @@
 #' @importFrom stringr str_flatten
 #' @importFrom tools package_dependencies
 #' @importFrom withr local_options
-#' @example inst/examples/examples-packages.R
+#' @example inst/examples/examples-pkg-utils.R
 
-#' @rdname pkg_functions
+#' @rdname pkg-utils
 #' @name pkg_status
 #' @export
 pkg_status <- function(pkgs,
@@ -96,7 +96,7 @@ pkg_status <- function(pkgs,
         )
 }
 
-#' @rdname pkg_functions
+#' @rdname pkg-utils
 #' @name pkg_deps
 #' @export
 pkg_deps <- function(pkgs,
@@ -154,7 +154,7 @@ pkg_deps <- function(pkgs,
 }
 
 
-#' @rdname pkg_functions
+#' @rdname pkg-utils
 #' @name pkg_revdeps
 #' @export
 pkg_revdeps <- function(pkgs,
@@ -183,7 +183,7 @@ pkg_revdeps <- function(pkgs,
 }
 
 
-#' @rdname pkg_functions
+#' @rdname pkg-utils
 #' @name pkg_updates
 #' @export
 pkg_updates <- function(pkgs = NULL,
@@ -267,7 +267,7 @@ pkg_updates <- function(pkgs = NULL,
         select(.data$pkg, ends_with("version"), ends_with("revdeps"))
 }
 
-#' @rdname pkg_functions
+#' @rdname pkg-utils
 #' @name pkg_upgrades
 #' @export
 pkg_upgrades <- function(pkgs = NULL,
