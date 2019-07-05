@@ -15,42 +15,42 @@ NULL
 #' @name heading
 #' @export
 heading <- function(...) {
-    cli::cat_rule(collapse_chr(...), col = "cyan")
+    cli::cat_rule(collapse_str(...), col = "cyan")
 }
 
 #' @rdname progress
 #' @name bullet
 #' @export
 bullet <- function(...) {
-    info(collapse_chr(...), type = "bullet")
+    info(collapse_str(...), type = "bullet")
 }
 
 #' @rdname progress
 #' @name item
 #' @export
 item <- function(...) {
-    info(collapse_chr(...), type = "item")
+    info(collapse_str(...), type = "item")
 }
 
 #' @rdname progress
 #' @name success
 #' @export
 success <- function(...) {
-    info(collapse_chr(...), type = "success")
+    info(collapse_str(...), type = "success")
 }
 
 #' @rdname progress
 #' @name concern
 #' @export
 concern <- function(...) {
-    info(collapse_chr(...), type = "concern")
+    info(collapse_str(...), type = "concern")
 }
 
 #' @rdname progress
 #' @name panic
 #' @export
 panic <- function(...) {
-    info(collapse_chr(...), type = "panic")
+    info(collapse_str(...), type = "panic")
 }
 
 #' @rdname progress
@@ -107,28 +107,6 @@ itemize <- function(.f, ..., .message = NULL, .timer = TRUE) {
         }
         result$result
     }
-}
-
-collapse_chr <- function(..., .sep = "", .quotes = FALSE) {
-    x <- list(...) %>% unlist(FALSE, FALSE)
-    if(is.character(x) && .quotes){
-        x %<>% str_c("'", ., "'")
-    }
-    x %<>% str_c(collapse = .sep)
-    if (length(x) == 0) return("")
-    x
-}
-
-commas = function(..., .quotes = TRUE, wrap = NULL) {
-    x = collapse_chr(..., .sep = ", ", .quotes = .quotes)
-    if(!is.null(wrap)){
-        x %<>% stringr::str_wrap(wrap)   
-    }
-    x
-}
-
-safely_and_quietly <- function(.f, otherwise = NULL, quiet = TRUE) {
-    purrr::safely(quietly(.f), otherwise = NULL, quiet = TRUE)
 }
 
 info <- function(x = NULL, ..., type = c("item", "bullet", "success", "concern", "panic")) {

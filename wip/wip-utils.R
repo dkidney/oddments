@@ -164,30 +164,6 @@ path_active = function(){
     rstudioapi::getActiveDocumentContext()$path
 }
 
-format_int = function(x){
-    check_is_intish(x)
-    format(floor(as.numeric(x)), scientific = FALSE, trim = TRUE)
-}
-
-# ---------------------------------------------------------------------------- #
-
-#' @title Print exact decimal places
-#' @description Print a value to the exact number of decimal places required. This function is
-#'   a wrapper for \link[base]{sprintf}.
-#' @param x a numeric vector
-#' @param digits the number of decimal places required
-#' @export
-#' @examples
-#' 1 %>% round(3)
-#' 1 %>% round_chr(3)
-round_chr = function(x, digits = 0){
-    i = is.na(x)
-    out = sprintf(str_c("%.", digits, "f"), x)
-    out[i] = NA_character_
-    out
-}
-
-
 # ---------------------------------------------------------------------------- #
 
 #' @rdname tri
@@ -375,19 +351,6 @@ hex_to_utf8 = function(x){
         map_chr(intToUtf8)
 }
 
-
-# ---------------------------------------------------------------------------- #
-
-f_chr = function(f){
-    f %<>% as.formula %>% as.character
-    if(length(f) == 2){
-        str_c("~ ", f[2])
-    }else{
-        str_c(f[2], " ~ ", f[3])
-    }
-}
-
-
 # ---------------------------------------------------------------------------- #
 
 clear_warnings = function(){
@@ -523,9 +486,6 @@ if(0){
 
 
 
-logit = stats::qlogis
-
-inv_logit = stats::plogis
 
 print_microbench = function(x, ...){
     dots = list(
@@ -540,11 +500,6 @@ print_microbench = function(x, ...){
     dots$row.names %<>% replace_null(FALSE)
     dots %>% do_call(print.data.frame)
 }
-
-convert_unix_time = function(x, tz = "Europe/London"){
-    as.POSIXct.numeric(x, tz = tz, origin = "1970-01-01")
-}
-
 
 
 #' @title Numeric range
@@ -648,61 +603,6 @@ split_data_frame = function(x, f, reorder = FALSE, ...){
 
 # ---------------------------------------------------------------------------- #
 
-#' @title Convert unix time to datetime
-#' @description Wrapper for \link[base]{as.POSIXct.numeric} using \code{origin =
-#'   "1970-01-01"}. Assumes units are in seconds.
-#'
-#' \url{https://en.wikipedia.org/wiki/Unix_time}
-#'
-#' \url{https://www.epochconverter.com}
-#' @param x numeric vector
-#' @param tz time zone
-#' @export
-#' @examples
-#' \dontrun{
-#'
-#' convert_unix_time(0)
-#' convert_unix_time(1000000000)
-#' convert_unix_time(1e9)
-#'
-#' tz = "Europe/London"
-#' lubridate::now(tz) %>% as.numeric %>% convert_unix_time(tz)
-#' }
-convert_unix_time = function(x, tz = "Europe/London"){
-    as.POSIXct.numeric(x, tz = tz, origin = "1970-01-01")
-}
-
-# ---------------------------------------------------------------------------- #
-
-#' @title Replace null values
-#' @description Replace \code{NULL} values with a default value.
-#' @param x input value
-#' @param replacement default replacement value if \code{x} is \code{NULL}
-#' @export
-#' @examples
-#' \dontrun{
-#'
-#' library(oddments)
-#'
-#' x = NULL
-#' y = 9
-#' x %>% replace_null(10)
-#' y %>% replace_null(10)
-#'}
-replace_null = function(x, replacement = NULL){
-    x %||% replacement
-}
-
-# ---------------------------------------------------------------------------- #
-
-#' @title Round digits and convert to character
-#' @description Wrapper for \link[base]{sprintf}.
-#' @param x numeric vector
-#' @param digits integer indicating the number of decimal places
-#' @export
-round_chr = function(x, digits = 0){
-    sprintf(str_c("%.", digits, "f"), x)
-}
 
 # ---------------------------------------------------------------------------- #
 
