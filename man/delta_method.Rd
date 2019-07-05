@@ -27,15 +27,18 @@ delta_method_X(.X, .beta, .vcov)
 \item{.X}{a design matrix (ncol equal to length .beta)}
 }
 \description{
-Estimate the variance of a function of normally distributed variables. All
-functions take a vector of beta estao
+Estimate the variance of a function of normally distributed variables.
+
+All functions take arguments \code{.beta} (a vector of estimated coefficients) and
+\code{.vcov} (the estimated variance covariance matrix for \code{.beta}).
+
 \itemize{
-\item \code{delta_method_f_pars()} takes a function where the beta parmaters are
-passed as separate arguments
-\item \code{delta_method_f_beta()} takes a function where the beta parmaters are
-passed as a single vector
-\item \code{delta_method_X()} takes a design matrix (e.g. the input to a linear
-model)
+\item \code{delta_method_f_pars()} takes function \code{.f_pars} which must be a
+function of separate beta paraemeters
+\item \code{delta_method_f_beta()} takes function \code{.f_beta} which must be a
+function of a single beta parameter vector
+\item \code{delta_method_X()} takes a design matrix as an input (e.g. the input to a
+linear model) instead of a function
 }
 }
 \details{
@@ -87,6 +90,5 @@ lines(x, fitted(model))
 delta = delta_method_X(X, coef(model), vcov(model))
 lines(x, delta$lower, col = "blue", lty = 2)
 lines(x, delta$upper, col = "blue", lty = 2)
-
 }
 }

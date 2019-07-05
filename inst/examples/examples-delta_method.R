@@ -43,5 +43,4 @@ lines(x, fitted(model))
 delta = delta_method_X(X, coef(model), vcov(model))
 lines(x, delta$lower, col = "blue", lty = 2)
 lines(x, delta$upper, col = "blue", lty = 2)
-
 }
