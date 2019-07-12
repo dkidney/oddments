@@ -13,7 +13,8 @@ NULL
 #' @rdname function-utils
 #' @name capture_args
 #' @examples
-#'
+#' \dontrun{
+#' 
 #' f <- function(a = 1, b = 2, c = 3, ...) as.list(base::match.call()[-1])
 #' g <- function(a = 1, b = 2, c = 3, ...) oddments::capture_args()
 #'

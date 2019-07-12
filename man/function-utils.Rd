@@ -15,3 +15,19 @@ call plus and any additional arguments passed via \link[base]{dots}.
 (\link[base]{match.call} ignores default arguments)
 }
 }
+\examples{
+\dontrun{
+
+f <- function(a = 1, b = 2, c = 3, ...) as.list(base::match.call()[-1])
+g <- function(a = 1, b = 2, c = 3, ...) oddments::capture_args()
+
+f(b = 22, d = 44, e = 55)
+g(b = 22, d = 44, e = 55)
+
+f(b = 22, 11, e = 55)
+g(b = 22, 11, e = 55)
+
+f(a = 11, b = 22, c = 33, 44)
+g(a = 11, b = 22, c = 33, 44)
+}
+}
