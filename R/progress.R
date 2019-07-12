@@ -15,42 +15,42 @@ NULL
 #' @name heading
 #' @export
 heading <- function(...) {
-    cli::cat_rule(collapse_str(...), col = "cyan")
+    cli::cat_rule(collapse_str(..., .use_quotes = FALSE), col = "dodgerblue")
 }
 
 #' @rdname progress
 #' @name bullet
 #' @export
 bullet <- function(...) {
-    info(collapse_str(...), type = "bullet")
+    info(collapse_str(..., .use_quotes = FALSE), type = "bullet")
 }
 
 #' @rdname progress
 #' @name item
 #' @export
 item <- function(...) {
-    info(collapse_str(...), type = "item")
+    info(collapse_str(..., .use_quotes = FALSE), type = "item")
 }
 
 #' @rdname progress
 #' @name success
 #' @export
 success <- function(...) {
-    info(collapse_str(...), type = "success")
+    info(collapse_str(..., .use_quotes = FALSE), type = "success")
 }
 
 #' @rdname progress
 #' @name concern
 #' @export
 concern <- function(...) {
-    info(collapse_str(...), type = "concern")
+    info(collapse_str(..., .use_quotes = FALSE), type = "concern")
 }
 
 #' @rdname progress
 #' @name panic
 #' @export
 panic <- function(...) {
-    info(collapse_str(...), type = "panic")
+    info(collapse_str(..., .use_quotes = FALSE), type = "panic")
 }
 
 #' @rdname progress
@@ -115,18 +115,18 @@ info <- function(x = NULL, ..., type = c("item", "bullet", "success", "concern",
     dots$x <- str_c(" ", x)
     if (type == "bullet") {
         dots$bullet %<>% replace_null("bullet")
-        dots$bullet_col %<>% replace_null("white")
-        dots$col %<>% replace_null("white")
+        dots$bullet_col %<>% replace_null("silver")
+        dots$col %<>% replace_null("silver")
     }
     if (type == "item") {
         dots$bullet %<>% replace_null("line")
-        dots$bullet_col %<>% replace_null("grey")
-        dots$col %<>% replace_null("grey")
+        dots$bullet_col %<>% replace_null("lightgrey")
+        dots$col %<>% replace_null("lightgrey")
     }
     if (type == "success") {
         dots$bullet %<>% replace_null("tick")
-        dots$bullet_col %<>% replace_null("green")
-        dots$col %<>% replace_null("silver")
+        dots$bullet_col %<>% replace_null("mediumseagreen")
+        dots$col %<>% replace_null("mediumseagreen")
     }
     if (type == "concern") {
         dots$bullet %<>% replace_null("square_small_filled")
@@ -135,8 +135,8 @@ info <- function(x = NULL, ..., type = c("item", "bullet", "success", "concern",
     }
     if (type == "panic") {
         dots$bullet %<>% replace_null("cross")
-        dots$bullet_col %<>% replace_null("red")
-        dots$col %<>% replace_null("red")
+        dots$bullet_col %<>% replace_null("tomato")
+        dots$col %<>% replace_null("tomato")
     }
     do.call(cli::cat_bullet, dots)
     invisible(list(info = x, type = type))

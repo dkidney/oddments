@@ -9,8 +9,8 @@
 \alias{difftime_str}
 \title{String utils}
 \usage{
-collapse_str(..., .sep = " ", .use_quotes = NULL,
-  .width = getOption("width"), .indent = 0, .exdent = 0)
+collapse_str(..., .sep = " ", .use_quotes = NULL, .width = NULL,
+  .indent = 0, .exdent = 0)
 
 commas(..., .use_quotes = NULL, .width = getOption("width"),
   .indent = 0, .exdent = 0)
@@ -62,10 +62,8 @@ cat(collapse_str(0:100, .width = 20, .indent = 5, .exdent = 5))
 
 cat(collapse_str(letters, LETTERS))
 cat(collapse_str(letters, LETTERS, .width = 20, .indent = 5, .exdent = 5))
-
 cat(commas(0:100))
 cat(commas(letters, LETTERS))
-
 1 \%>\% round(3)
 1 \%>\% sprintf("\%.3f", .)
 1 \%>\% round_str(3)
@@ -73,16 +71,14 @@ cat(commas(letters, LETTERS))
 pi \%>\% round(3)
 pi \%>\% sprintf("\%.3f", .)
 pi \%>\% round_str(3)
-
-1e10 \%>\% integer_str
-
-start = Sys.time()
-stop = Sys.time()
-dt = difftime(stop, start)
-dt \%>\% print
-dt \%>\% as.character
-dt \%>\% difftime_str
+1e10 \%>\% integer_str()
+start <- Sys.time()
+stop <- Sys.time()
+dt <- difftime(stop, start)
+dt \%>\% print()
+dt \%>\% format(units = "mins") # doesn't change units
+dt \%>\% as.character()
+dt \%>\% difftime_str()
 dt \%>\% difftime_str(units = "secs")
 dt \%>\% difftime_str(units = "mins")
-
 }

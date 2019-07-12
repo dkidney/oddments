@@ -30,30 +30,33 @@ NULL
 #' @examples
 #' cat(collapse_str(0:100))
 #' cat(collapse_str(0:100, .width = 20, .indent = 5, .exdent = 5))
-#' 
+#'
 #' cat(collapse_str(letters, LETTERS))
 #' cat(collapse_str(letters, LETTERS, .width = 20, .indent = 5, .exdent = 5))
-#' 
 collapse_str <- function(...,
                          .sep = " ",
                          .use_quotes = NULL,
-                         .width = getOption("width"),
+                         .width = NULL,
                          .indent = 0,
                          .exdent = 0) {
-    x <- list(...) %>% unlist(FALSE, FALSE)
-    stopifnot(is.null(dim(x)))
-    if (length(x) == 0) {
-        return("")
-    }
-    if (is.null(.use_quotes)) {
-        .use_quotes <- is.character(x)
-    }
-    if (.use_quotes) {
-        x %<>% str_c("'", ., "'")
-    }
-    x %>%
-        str_c(collapse = .sep) %>%
-        str_wrap(width = .width, indent = .indent, exdent = .exdent)
+  x <- list(...) %>% unlist(FALSE, FALSE)
+  stopifnot(is.null(dim(x)))
+  if (length(x) == 0) {
+    return("")
+  }
+  if (is.null(.use_quotes)) {
+    .use_quotes <- is.character(x)
+  }
+  if (.use_quotes) {
+    x %<>% str_c("'", ., "'")
+  }
+  x %<>% str_c(collapse = .sep)
+  if (!is.null(.width)) {
+    stopifnot(rlang::is_integerish(.width))
+    stopifnot(length(.width) == 1)
+    x %<>% str_wrap(width = .width, indent = .indent, exdent = .exdent)
+  }
+  x
 }
 
 #' @rdname str-utils
@@ -62,20 +65,19 @@ collapse_str <- function(...,
 #' @examples
 #' cat(commas(0:100))
 #' cat(commas(letters, LETTERS))
-#' 
 commas <- function(...,
                    .use_quotes = NULL,
                    .width = getOption("width"),
                    .indent = 0,
                    .exdent = 0) {
-    collapse_str(
-        ...,
-        .sep = ", ",
-        .use_quotes = .use_quotes,
-        .width = .width,
-        .indent = .indent,
-        .exdent = .exdent
-    )
+  collapse_str(
+    ...,
+    .sep = ", ",
+    .use_quotes = .use_quotes,
+    .width = .width,
+    .indent = .indent,
+    .exdent = .exdent
+  )
 }
 
 # TODO
@@ -94,32 +96,30 @@ lorum <- c("lorum")
 #' pi %>% round(3)
 #' pi %>% sprintf("%.3f", .)
 #' pi %>% round_str(3)
-#' 
 round_str <- function(x, digits = getOption("digits")) {
-    stopifnot(is.numeric(x))
-    stopifnot(is.null(dim(x)))
-    out <- rep(NA_character_, length(x))
-    i <- !is.na(x)
-    if (!any(i)) {
-        return(out)
-    }
-    out[i] <- sprintf(fmt = str_c("%.", digits, "f"), x[i])
-    out
+  stopifnot(is.numeric(x))
+  stopifnot(is.null(dim(x)))
+  out <- rep(NA_character_, length(x))
+  i <- !is.na(x)
+  if (!any(i)) {
+    return(out)
+  }
+  out[i] <- sprintf(fmt = str_c("%.", digits, "f"), x[i])
+  out
 }
 
 #' @rdname str-utils
 #' @rdname integer_str
 #' @export
 #' @examples
-#' 1e10 %>% integer_str
-#' 
-integer_str = function(x){
-    stopifnot(is.numeric(x))
-    stopifnot(is.null(dim(x)))
-    x %>% 
-        as.numeric %>% 
-        floor %>% 
-        format(scientific = FALSE, trim = TRUE)
+#' 1e10 %>% integer_str()
+integer_str <- function(x) {
+  stopifnot(is.numeric(x))
+  stopifnot(is.null(dim(x)))
+  x %>%
+    as.numeric() %>%
+    floor() %>%
+    format(scientific = FALSE, trim = TRUE)
 }
 
 #' @rdname str-utils
@@ -128,25 +128,25 @@ integer_str = function(x){
 #' @param units [string] time units (one of "auto", "secs", "mins", "hours", "days",
 #'   "weeks"))
 #' @examples
-#' start = Sys.time()
-#' stop = Sys.time()
-#' dt = difftime(stop, start)
-#' dt %>% print
-#' dt %>% as.character
-#' dt %>% difftime_str
+#' start <- Sys.time()
+#' stop <- Sys.time()
+#' dt <- difftime(stop, start)
+#' dt %>% print()
+#' dt %>% format(units = "mins") # doesn't change units
+#' dt %>% as.character()
+#' dt %>% difftime_str()
 #' dt %>% difftime_str(units = "secs")
 #' dt %>% difftime_str(units = "mins")
-#' 
-difftime_str = function(x, digits = 1, units = "auto"){
-    stopifnot(inherits(x, "difftime"))
-    stopifnot(length(x) == 1)
-    units = match.arg(units, c("auto", "secs", "mins", "hours", "days", "weeks"))
-    if (units == "auto") {
-        units = attr(x, "units")
-    }
-    paste(
-        "Time difference of",
-        round_str(as.numeric(x, units = units), digits = digits),
-        units
-    )
+difftime_str <- function(x, digits = 1, units = "auto") {
+  stopifnot(inherits(x, "difftime"))
+  stopifnot(length(x) == 1)
+  units <- match.arg(units, c("auto", "secs", "mins", "hours", "days", "weeks"))
+  if (units == "auto") {
+    units <- attr(x, "units")
+  }
+  paste(
+    "Time difference of",
+    round_str(as.numeric(x, units = units), digits = digits),
+    units
+  )
 }
