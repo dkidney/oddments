@@ -262,6 +262,7 @@ pkg_updates <- function(pkgs = NULL,
         available = available[rownames(available) %in% pkg_scope, , drop = FALSE],
         installed = installed
     )
+    message("package updates available - to upgrade everything run:\n\toddments::pkg_upgrades()")
     results %>%
         left_join(revdeps, "pkg") %>%
         select(.data$pkg, ends_with("version"), ends_with("revdeps"))

@@ -10,8 +10,8 @@ capture_args()
 \description{
 \itemize{
 \item \code{capture_args()} - returns a list of all argument values supplied to the
-caller function, including the default argument values that were not specified in the
-call plus and any additional arguments passed via \link[base]{dots}.
+caller function, including any additional arguments passed via \link[base]{dots},
+plus the default values of any arguments that were not specified in the call
 (\link[base]{match.call} ignores default arguments)
 }
 }

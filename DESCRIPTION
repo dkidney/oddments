@@ -15,6 +15,7 @@ BugReports: https://github.com/dkidney/oddments/issues
 Imports: 
     cli (>= 1.1.0),
     dplyr (>= 0.7.8),
+    ggplot2 (>= 3.2.0),
     kableExtra (>= 1.1.0),
     knitr (>= 1.20),
     lubridate (>= 1.7.4),
@@ -28,6 +29,7 @@ Imports:
 Suggests: 
     rstudioapi (>= 0.8),
     testthat (>= 2.0.1),
+    tidyverse (>= 1.2.1),
     yardstick (>= 0.0.3)
 Encoding: UTF-8
 Language: en-GB

@@ -33,6 +33,7 @@ NULL
 #'
 #' cat(collapse_str(letters, LETTERS))
 #' cat(collapse_str(letters, LETTERS, .width = 20, .indent = 5, .exdent = 5))
+#'
 collapse_str <- function(...,
                          .sep = " ",
                          .use_quotes = NULL,
@@ -65,6 +66,7 @@ collapse_str <- function(...,
 #' @examples
 #' cat(commas(0:100))
 #' cat(commas(letters, LETTERS))
+#'
 commas <- function(...,
                    .use_quotes = NULL,
                    .width = getOption("width"),
@@ -80,11 +82,20 @@ commas <- function(...,
   )
 }
 
-# TODO
-lorum <- c("lorum")
+#' @rdname str-utils
+#' @name lorum
+#' @export
+#' @examples
+#' cat(collapse_str(lorum))
+#' cat(commas(lorum, .width = 20, .indent = 5, .exdent = 5))
+#'
+lorum <- c("Lorem", "ipsum", "dolor", "sit", "amet",
+"consectetur", "adipiscing", "elit", "sed", "do",
+"eiusmod", "tempor", "incididunt","ut", "labore",
+"et", "dolore", "magna", "aliqua")
 
 #' @rdname str-utils
-#' @rdname round_str
+#' @name round_str
 #' @param x a numeric vector
 #' @param digits [integer] number of decimal places
 #' @export
@@ -96,6 +107,7 @@ lorum <- c("lorum")
 #' pi %>% round(3)
 #' pi %>% sprintf("%.3f", .)
 #' pi %>% round_str(3)
+#'
 round_str <- function(x, digits = getOption("digits")) {
   stopifnot(is.numeric(x))
   stopifnot(is.null(dim(x)))
@@ -109,10 +121,11 @@ round_str <- function(x, digits = getOption("digits")) {
 }
 
 #' @rdname str-utils
-#' @rdname integer_str
+#' @name integer_str
 #' @export
 #' @examples
 #' 1e10 %>% integer_str()
+#'
 integer_str <- function(x) {
   stopifnot(is.numeric(x))
   stopifnot(is.null(dim(x)))
@@ -123,7 +136,7 @@ integer_str <- function(x) {
 }
 
 #' @rdname str-utils
-#' @rdname difftime_str
+#' @name difftime_str
 #' @export
 #' @param units [string] time units (one of "auto", "secs", "mins", "hours", "days",
 #'   "weeks"))
@@ -137,6 +150,7 @@ integer_str <- function(x) {
 #' dt %>% difftime_str()
 #' dt %>% difftime_str(units = "secs")
 #' dt %>% difftime_str(units = "mins")
+#'
 difftime_str <- function(x, digits = 1, units = "auto") {
   stopifnot(inherits(x, "difftime"))
   stopifnot(length(x) == 1)

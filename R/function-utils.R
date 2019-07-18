@@ -4,17 +4,18 @@
 #' @description
 #' \itemize{
 #'   \item \code{capture_args()} - returns a list of all argument values supplied to the
-#'   caller function, including the default argument values that were not specified in the
-#'   call plus and any additional arguments passed via \link[base]{dots}.
+#'   caller function, including any additional arguments passed via \link[base]{dots},
+#'   plus the default values of any arguments that were not specified in the call
 #'   (\link[base]{match.call} ignores default arguments)
 #' }
 NULL
 
 #' @rdname function-utils
 #' @name capture_args
+#' @export
 #' @examples
 #' \dontrun{
-#' 
+#'
 #' f <- function(a = 1, b = 2, c = 3, ...) as.list(base::match.call()[-1])
 #' g <- function(a = 1, b = 2, c = 3, ...) oddments::capture_args()
 #'
@@ -43,5 +44,5 @@ capture_args <- function() {
 
 # TODO - needs more work...
 safely_and_quietly <- function(.f, otherwise = NULL, quiet = TRUE) {
-    purrr::safely(quietly(.f), otherwise = NULL, quiet = TRUE)
+    purrr::safely(purrr::quietly(.f), otherwise = NULL, quiet = TRUE)
 }

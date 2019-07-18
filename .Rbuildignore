@@ -5,9 +5,7 @@
 ^\.travis\.yml$
 ^cran-comments\.md$
 ^data-raw$
-^wip$
-^wip_rcpp$
-^wip_rmarkdown$
+^wip*$
 ^LICENSE\.md$
 ^README-.*\.png$
 ^README\.Rmd$
