@@ -5,7 +5,7 @@ subtitle: "Subtitle"
 author: "Darren Kidney"
 date: '`r format(Sys.Date(), "%d %b %Y")`'
 output: 
-  oddments:::html_template:
+  oddments:::rmd_html_template:
   # html_document:
     # code_folding: hide
     # css: '`r system.file("rmarkdown/templates/html_template/resources/html_template.css", package = "oddments")`'

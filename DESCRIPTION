@@ -16,6 +16,7 @@ Imports:
     cli (>= 1.1.0),
     dplyr (>= 0.7.8),
     ggplot2 (>= 3.2.0),
+    DT,
     kableExtra (>= 1.1.0),
     knitr (>= 1.20),
     lubridate (>= 1.7.4),

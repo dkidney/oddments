@@ -1,75 +1,56 @@
 
-#' @importFrom rmarkdown html_document
-html_template <- function(...) {
+#' @rdname rmd-utils
+#' @name rmd_utils
+#' @title Rmarkdown utility functions
+#' @description
+#' \itemize{
+#'   \item \code{rmd_html_template()} -
+#'   \item \code{rmd_insert_pagebreak()} - inserts a page break in an html, pdf or docx
+#'   rmarkdown document
+#' }
+#' @details
+#' \preformatted{
+#' ```{r, echo=FALSE, results="asis"}
+#' rmd_insert_pagebreak()
+#' ```
+#' }
+#' @examples
+#' \dontrun{
+#'
+#' # TODO
+#' }
+NULL
+
+#' @rdname rmd-utils
+#' @name rmd_utils
+#' @export
+rmd_html_template <- function(...) {
   args <- list(...)
   args$css %<>%
     replace_null(
       "rmarkdown/templates/html_template/resources/html_template.css" %>%
         system.file(package = "oddments")
     )
-  do.call(html_document, args)
+  do.call(rmarkdown::html_document, args)
 }
 
-# -------------------------------------------------------------------------------------- #
-
-# @rdname TODO
-# @name kable2
-#' @title TODO
-#' @description A combination of \link[knitr]{kable}, \link[kableExtra]{kable_styling} and
-#'   \link[kableExtra]{scroll_box}.
-#' @param x (data.frame)
-#' @param scroll (boolean) if \code{TRUE} then a \link[kableExtra]{scroll_box} will be
-#'   used
-#' @param ... additional arguments to pass to \link[knitr]{kable}
-#' @importFrom knitr kable
-#' @importFrom kableExtra kable_styling
-#' @importFrom kableExtra column_spec
-#' @importFrom kableExtra row_spec
-#' @importFrom kableExtra scroll_box
+#' @rdname rmd-utils
+#' @name rmd_utils
 #' @export
-#' @examples
-#' \dontrun{
-#'
-#' mtcars %>%
-#'   head() %>%
-#'   kable2() %>%
-#'   view_html()
-#' }
-#'
-kable2 <- function(x, scroll = FALSE, ...) {
-  df <- x %>%
-    knitr::kable(
-      format = "html",
-      digits = 5,
-      row.names = TRUE,
-      caption = "A caption",
-      format.args = list(big.mark = ","),
-      ...
-    ) %>%
-    kableExtra::kable_styling(
-      full_width = FALSE,
-      bootstrap_options = c("striped", "condensed"),
-      position = "center",
-      font_size = 11,
-      fixed_thead = TRUE # dont need this if using scroll_box
-    ) %>%
-    kableExtra::row_spec(
-      0,
-      bold = TRUE,
-      color = "white",
-      background = "#337ab7" # bootstrap_button_blue
-    ) %>%
-    kableExtra::column_spec(
-      1,
-      bold = TRUE
-    )
-  if (!scroll) {
-    return(df)
+# @param hrule TODO
+rmd_insert_pagebreak <- function() {
+  output <- knitr::opts_knit$get("rmarkdown.pandoc.to")
+  if (!is.null(output)) {
+    txt <- output %>%
+      switch(
+        html = "<P style='page-break-before: always'>",
+        docx = "##### pagebreak",
+        latex = "\\newpage"
+      )
+    # if (hrule) {
+    #   txt %<>% c("****************************************\n\n", .)
+    # }
+    cat(txt)
   }
-  df %>%
-    kableExtra::scroll_box(
-      height = "500px",
-      width = "100%",
-      box_css = "border: 0px; padding: 0px"
-    )
+  invisible()
 }
