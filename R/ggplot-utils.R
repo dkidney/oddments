@@ -243,7 +243,11 @@ theme_base <- function(base_size = 12,
 }
 
 #' @rdname ggplot-utils
-#' @name theme_dmp
+#' @name theme_random
+#' @param pointsize TODO
+#' @param family TODO
+#' @param linesize TODO
+#' @param legend TODO
 #' @export
 theme_random = function(pointsize = 8,
                         family = "serif",

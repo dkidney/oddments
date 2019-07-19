@@ -24,6 +24,7 @@ NULL
 #' @rdname rmd-utils
 #' @name rmd_utils
 #' @export
+#' @param ... additional arguments to pass to \link[rmarkdown]{html_document}
 rmd_html_template <- function(...) {
   args <- list(...)
   args$css %<>%

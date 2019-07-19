@@ -4,8 +4,8 @@
 \alias{ggplot-utils}
 \alias{theme_oddments}
 \alias{theme_base}
-\alias{theme_dmp}
 \alias{theme_random}
+\alias{theme_dmp}
 \alias{ggplot2_colours}
 \alias{ggplot2_colors}
 \title{ggplot utility functions}
@@ -34,6 +34,14 @@ ggplot2_colors(ncols)
 \item{base_line_size}{base size for line elements}
 
 \item{base_rect_size}{base size for rect elements}
+
+\item{pointsize}{TODO}
+
+\item{family}{TODO}
+
+\item{linesize}{TODO}
+
+\item{legend}{TODO}
 
 \item{ncols}{number of colours to generate}
 }

@@ -3,9 +3,15 @@
 \name{df-utils}
 \alias{df-utils}
 \alias{df_kable}
+\alias{df_datatable}
+\alias{df_print}
 \title{Data frame utils}
 \usage{
 df_kable(x, scroll = FALSE, ...)
+
+df_datatable(x, ...)
+
+df_print(x, ...)
 }
 \arguments{
 \item{x}{(data.frame)}
@@ -29,10 +35,14 @@ See: https://rstudio.github.io/DT
 }
 \examples{
 \dontrun{
+iris \%>\% knitr::kable() \%>\% view_html()
+iris \%>\% df_kable() \%>\% view_html()
+iris \%>\% df_kable(scroll = TRUE) \%>\% view_html()
 
-mtcars \%>\%
-  head() \%>\%
-  df_kable() \%>\%
-  view_html()
+iris \%>\% DT::datatable()
+iris \%>\% df_datatable()
+    
+iris \%>\% head \%>\% print.data.frame()
+iris \%>\% head \%>\% df_print()
 }
 }

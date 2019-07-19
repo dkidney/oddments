@@ -10,6 +10,9 @@ rmd_html_template(...)
 
 rmd_insert_pagebreak()
 }
+\arguments{
+\item{...}{additional arguments to pass to \link[rmarkdown]{html_document}}
+}
 \description{
 \itemize{
 \item \code{rmd_html_template()} -

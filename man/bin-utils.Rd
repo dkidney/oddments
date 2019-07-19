@@ -3,9 +3,15 @@
 \name{bin-utils}
 \alias{bin-utils}
 \alias{bin}
+\alias{bin_pretty}
+\alias{bin_quantile}
 \title{Alternative cut functions}
 \usage{
 bin(x, breaks = 10, explicit_na = TRUE, ...)
+
+bin_pretty(x, n = 10, ...)
+
+bin_quantile(x, n = 10, ...)
 }
 \arguments{
 \item{x}{numeric vector}
@@ -21,37 +27,40 @@ factor levels using \link[forcats]{fct_explicit_na}}
 \item{n}{number of intervals}
 }
 \description{
-\code{bin} is equivalent to \link[base]{cut} but uses alternative defaults:
-\code{include.lowest = TRUE, right = FALSE, dig.lab = 5}. \cr
-
-\code{bin_pretty} uses \link[base]{pretty} to determine the cut points. \cr
-
-\code{bin_quantile} uses \link[stats]{quantile} to determine the cut points. It works
-similarly to \link[ggplot2]{cut_number} but if there is insufficient information for
-\code{n} cut points it tries to find a lower value of \code{n} that does not produce an
-error. \cr
+\itemize{
+\item \code{bin()} - is equivalent to \link[base]{cut} but uses alternative
+defaults: \code{include.lowest = TRUE, right = FALSE, dig.lab = 5}
+\item \code{bin_pretty()} - uses \link[base]{pretty} to determine the cut points
+\item \code{bin_quantile()} - uses \link[stats]{quantile} to determine the cut
+points. It works similarly to \link[ggplot2]{cut_number} but if there is
+insufficient information for \code{n} cut points it tries to find a lower value of
+\code{n} that does not produce an error
+}
 }
 \examples{
 \dontrun{
 
-df = data.frame(
+library(tidyverse)
+theme_set(theme_oddments())
+
+df <- tibble(
   x = rnorm(1000),
   y = sample(1:4, 1000, TRUE),
   z = sample(LETTERS[1:4], 1000, TRUE)
 )
 
-df \%>\% pip(bin(x, breaks = 5))
-df \%>\% pip(bin_pretty(x))
-df \%>\% pip(bin_quantile(x, n = 5))
-df \%>\% pip(ggplot2::cut_number(x, n = 5)) # identical
+df \%>\% ggplot + geom_bar(aes(bin(x, breaks = 5)))
+df \%>\% ggplot + geom_bar(aes(bin_pretty(x)))
+df \%>\% ggplot + geom_bar(aes(bin_quantile(x, n = 5)))
+df \%>\% ggplot + geom_bar(aes(cut_number(x, n = 5))) # identical
 
-df \%>\% pip(bin(y, breaks = 5))
-df \%>\% pip(bin_pretty(y))
-df \%>\% pip(bin_quantile(y, n = 5))
-df \%>\% pip(ggplot2::cut_number(y, n = 5)) # throws an error
+df \%>\% ggplot + geom_bar(aes(bin(y, breaks = 5)))
+df \%>\% ggplot + geom_bar(aes(bin_pretty(y)))
+df \%>\% ggplot + geom_bar(aes(bin_quantile(y, n = 5)))
+df \%>\% ggplot + geom_bar(aes(cut_number(y, n = 5))) # throws an error
 
-df \%>\% pip(bin(z, breaks = 5))
-df \%>\% pip(bin_pretty(z))
-df \%>\% pip(bin_quantile(z, n = 5))
+df \%>\% ggplot + geom_bar(aes(bin(z, breaks = 5)))
+df \%>\% ggplot + geom_bar(aes(bin_pretty(z)))
+df \%>\% ggplot + geom_bar(aes(bin_quantile(z, n = 5)))
 }
 }

@@ -14,9 +14,8 @@ iris %>% sketch(Sepal.Width)
 iris %>% sketch(Petal.Length)
 iris %>% sketch(Petal.Length, group = Species)
 iris %>% sketch(Petal.Length, Petal.Width)
-iris %>% sketch(Petal.Length, Petal.Width, group = Species)
-
-iris %>% sketch(Sepal.Length)
+iris %>% sketch(Petal.Length, Petal.Width, y_points = TRUE)
+iris %>% sketch(Petal.Length, Petal.Width, group = Species) # fix
 
 iris %>% sketch(Species)
 iris %>% sketch(Species, Sepal.Length) # fix
