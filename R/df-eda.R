@@ -65,11 +65,11 @@ skim <- function(data,
   N <- nrow(data)
   if (verbose) {
     dims <- dim(data) %>% format(big.mark = ",")
-    comp = stats::complete.cases(data)
-    ncomp = sum(comp)
-    pcomp = round_str(100 * mean(comp), 1)
+    comp <- stats::complete.cases(data)
+    ncomp <- sum(comp)
+    pcomp <- round_str(100 * mean(comp), 1)
     if (ncomp < N && pcomp == "100.0") {
-      pcomp = "99.9"
+      pcomp <- "99.9"
     }
     item("size:", utils::object.size(data) %>% format(units = "auto"))
     item("rows:", dims[1])
@@ -382,20 +382,29 @@ skim <- function(data,
 #'   exceeds \code{max_distinct_group} a error will be thrown
 #' @param x_bins passed to \link[ggplot2]{geom_histogram} (ignored if \code{x} is
 #'   discrete)
+#' @param x_binwidth TODO
+#' @param x_col TODO
 #' @param y_method TODO
 #' @param y_family TODO
 #' @param y_points TODO
+#' @param y_col TODO
 #' @param k TODO
 #' @importFrom dplyr group_by n summarise transmute ungroup
-#' @importFrom ggplot2 aes facet_wrap ggplot_build labs scale_y_continuous sec_axis
+#' @importFrom ggplot2 aes
+#' @importFrom ggplot2 facet_wrap
 #' @importFrom ggplot2 ggplot
+#' @importFrom ggplot2 ggplot_build
 #' @importFrom ggplot2 geom_bar
 #' @importFrom ggplot2 geom_boxplot
 #' @importFrom ggplot2 geom_errorbar
+#' @importFrom ggplot2 geom_histogram
 #' @importFrom ggplot2 geom_line
 #' @importFrom ggplot2 geom_point
 #' @importFrom ggplot2 geom_ribbon
 #' @importFrom ggplot2 geom_smooth
+#' @importFrom ggplot2 labs
+#' @importFrom ggplot2 scale_y_continuous
+#' @importFrom ggplot2 sec_axis
 #' @importFrom rlang enquo quo_name
 sketch <- function(data,
                    x,
@@ -404,16 +413,18 @@ sketch <- function(data,
                    min_unique_continuous = 10,
                    max_unique_discrete = 50,
                    max_distinct_group = 3,
-                   x_bins = 30,
+                   x_bins = NULL,
+                   x_binwidth = NULL,
+                   x_col = "dodgerblue",
+                   y_points = NULL,
                    y_method = NULL,
                    y_family = NULL,
-                   y_points = NULL,
+                   y_col = "grey30",
                    k = 10) {
   stopifnot(inherits(data, "data.frame"))
   stopifnot(!missing(x))
   use_y <- !missing(y)
   use_group <- !missing(group)
-  # message("groups ", use_group)
 
   # data trans -----
   quos <- list(x = enquo(x))
@@ -425,7 +436,7 @@ sketch <- function(data,
 
   # var names -----
   var_names <- list(x = quo_name(quos$x))
-  # if(use_y) var_names$y = quo_name(quos$y)
+  if (use_y) var_names$y <- quo_name(quos$y)
   if (use_group) var_names$group <- quo_name(quos$group)
 
   # check x -----
@@ -447,12 +458,22 @@ sketch <- function(data,
     }
   }
   if (use_y) {
-    y_methods <- if (continuous_x) {
-      c("gam", "glm", "loess", "none")
+    y_family_guess <- guess_family(data_trans$y)
+    if (continuous_x) {
+      y_methods <- c("gam", "glm", "loess", "none")
+      if (y_family_guess == "binomial") {
+        y_method %<>% replace_null("glm")
+      } else {
+        y_method %<>% replace_null("loess")
+      }
     } else {
-      c("glm", "boxplot", "none")
+      y_methods <- c("boxplot", "glm", "none")
+      if (y_family_guess == "binomial") {
+        y_method %<>% replace_null("glm")
+      } else {
+        y_method %<>% replace_null("boxplot")
+      }
     }
-    y_method %<>% replace_null("glm")
     if (!y_method %in% y_methods) {
       warning(
         "expecting y_method to be one of: '",
@@ -462,23 +483,28 @@ sketch <- function(data,
     }
   }
   if (use_y) {
+    y_smooth <- y_method != "none"
+    if (y_smooth) {
+      if (y_method == "loess") {
+        y_family %<>% replace_null("gaussian")
+      } else {
+        y_family %<>% replace_null(y_family_guess)
+      }
+      if (y_method == "loess" && y_family_guess == "binomial") {
+        warning("y looks to be binary - consider using y_method = 'glm'")
+      }
+      if (y_family == "binomial" && y_method == "boxplot") {
+        warning("boxplot method unsuitable for y_family = 'binomial'")
+      }
+    }
+  }
+  if (use_y) {
     if (is.null(y_points)) {
-      y_points <- FALSE
+      y_points <- TRUE
     }
     y_points <- isTRUE(y_points)
     if (!y_points && y_method == "none") {
       use_y <- FALSE
-    }
-  }
-  if (use_y) {
-    y_smooth <- y_method != "none"
-    if (y_smooth) {
-      if (is.null(y_family)) {
-        y_family <- if (y_method == "loess") "gaussian" else guess_family(data_trans$y)
-      }
-      if (y_family == "binomial" && y_method == "boxplot") {
-        warning(str_c("boxplot method unsuitable for y variable type ", y_family))
-      }
     }
   }
 
@@ -499,9 +525,16 @@ sketch <- function(data,
   # if continuous, then use geom_histogram to discretise x and get calculate totals
   # otherwise calculate totals for each level of x
   if (continuous_x) {
+    if (is.null(x_bins) && is.null(x_binwidth)) {
+      x_bins <- 30
+    }
     data_x <- data_trans %>%
-      ggplot2::ggplot(.) +
-      ggplot2::geom_histogram(aes(.data$x, group = .data$group), bins = x_bins)
+      ggplot() +
+      geom_histogram(
+        mapping = aes(.data$x, group = .data$group),
+        binwidth = x_binwidth,
+        bins = x_bins
+      )
     data_x %<>%
       ggplot_build() %>%
       pluck("data") %>%
@@ -526,61 +559,58 @@ sketch <- function(data,
   }
 
   # plot x -----
-  # message("x")
-  # message("  continuous_x ", continuous_x)
   suppressWarnings({
-    plot_x <- data_x %>%
+    plt <- data_x %>%
       ggplot() +
       geom_bar(
         aes(.data$x, .data$prop, group = .data$group, width = .data$width),
         stat = "identity",
-        fill = "dodgerblue",
+        fill = x_col,
         alpha = 0.8
       ) +
-      labs(title = var_names$x, y = "Density", x = var_names$x) +
+      labs(
+        # title = var_names$x,
+        y = str_c(var_names$x, " density"),
+        x = var_names$x
+      ) +
       theme(legend.position = "none")
   })
   if (use_group) {
-    plot_x <- plot_x + facet_wrap(~group, ncol = 1)
+    plt <- plt + facet_wrap(~group, ncol = 1)
   }
   if (!use_y) {
-    return(plot_x)
+    return(plt)
   }
 
   # plot y -----
-  # message("y")
-  # message("  y_family ", y_family)
-  # message("  y_smooth ", y_smooth)
-  # message("  y_points ", y_points)
-  # helper functions for making second y axis
 
-  y2_min = y2_max = y2_dif = NA_real_
+  # helper functions for making second y axis
   y1_max <- max(data_x$prop)
+  y2_min <- y2_max <- y2_dif <- NA_real_
   y1_to_y2 <- function(y1) (y1 / y1_max * y2_dif) + y2_min
   y2_to_y1 <- function(y2) (y2 - y2_min) / y2_dif * y1_max
 
+  plot_y_temp <- data_trans %>%
+    ggplot(aes(.data$x, .data$y, group = .data$group))
+
+  if (y_points) {
+    plot_y_points <- plot_y_temp + geom_point()
+    data_y_points <- suppressMessages({
+      plot_y_points %>%
+        ggplot_build() %>%
+        pluck("data") %>%
+        pluck(1) %>%
+        as_tibble() %>%
+        mutate(group = group_fct[.data$group]) %>%
+        select(.data$x, starts_with("y"), .data$group)
+    })
+    y2_min %<>% min(data_y_points$y, na.rm = TRUE)
+    y2_max %<>% max(data_y_points$y, na.rm = TRUE)
+    y2_dif <- y2_max - y2_min
+  }
+
   if (continuous_x) {
-    browser()
-
-    plot_y_temp = data_trans %>%
-      ggplot(aes(.data$x, .data$y, group = .data$group))
-
-    if(y_points){
-      plot_y_points <- plot_y_temp + geom_point()
-      data_y_points <- suppressMessages({
-        plot_y_points %>%
-          ggplot_build() %>%
-          pluck("data") %>%
-          pluck(1) %>%
-          as_tibble() %>%
-          mutate(group = group_fct[.data$group]) %>%
-          select(.data$x, starts_with("y"), .data$group)
-      })
-      y2_min %<>% min(data_y_points$y, na.rm = TRUE)
-      y2_max %<>% max(data_y_points$y, na.rm = TRUE)
-    }
-
-    if(y_smooth){
+    if (y_smooth) {
       plot_y_smooth <- plot_y_temp +
         geom_smooth(
           method = y_method,
@@ -591,212 +621,156 @@ sketch <- function(data,
             y ~ x
           }
         )
-      data_y_smooth <- suppressMessages({
-        plot_y_smooth %>%
-          ggplot_build() %>%
-          pluck("data") %>%
-          pluck(1) %>%
-          as_tibble() %>%
-          mutate(group = group_fct[.data$group]) %>%
-          select(.data$x, starts_with("y"), .data$group)
+      data_y_smooth <- suppressWarnings({
+        suppressMessages({
+          plot_y_smooth %>%
+            ggplot_build() %>%
+            pluck("data") %>%
+            pluck(1) %>%
+            as_tibble() %>%
+            mutate(group = group_fct[.data$group]) %>%
+            select(.data$x, starts_with("y"), .data$group)
+        })
       })
-      y2_min %<>% min(data_y_smooth$ymin, na.rm = TRUE)
-      y2_max %<>% max(data_y_smooth$ymax, na.rm = TRUE)
+      y2_lims <- data_y_smooth %>%
+        select(starts_with("y")) %>%
+        map(range, na.rm = TRUE) %>%
+        unname() %>%
+        unlist()
+      y2_min %<>% min(y2_lims, na.rm = TRUE)
+      y2_max %<>% max(y2_lims, na.rm = TRUE)
+      y2_dif <- y2_max - y2_min
     }
 
-    data_y <- suppressMessages({
-      plot_y %>%
-        ggplot_build() %>%
-        pluck("data") %>%
-        pluck(1) %>%
-        as_tibble() %>%
-        mutate(group = group_fct[.data$group]) %>%
-        select(.data$x, starts_with("y"), .data$group)
-    })
-
-    # rescale y values in data_y
-    # so that range of sec y axis matches range of y axis in final plot
-    y2_lim = data_y %>%
-      select(starts_with("y")) %>%
-      map(range) %>%
-      unlist %>%
-      range()
-    y2_min = min(y2_lim)
-    y2_max = max(y2_lim)
-    y2_dif = abs(diff(range(y2_lim)))
-    y1_max <- max(data_x$prop)
-    y1_to_y2 <- function(y1) (y1 / y1_max * y2_dif) + y2_min
-    y2_to_y1 <- function(y2) (y2 - y2_min) / y2_dif * y1_max
-    data_y %<>%
-      mutate_at(
-        vars(starts_with("y")),
-        y2_to_y1
-      )
-
-    if(y_points){
-      plot_x <- plot_x +
-        geom_point(
-          mapping = aes(.data$x, .data$y, group = .data$group),
-          data = data_y,
-          col = "tomato"
-        )
-    }
-
-    if(y_smooth){
-      plot_x <- plot_x +
+    if (y_smooth) {
+      data_y_smooth %<>%
+        mutate_at(c("y", "ymin", "ymax"), y2_to_y1)
+      plt <- plt +
         geom_line(
           mapping = aes(.data$x, .data$y),
-          data = data_y,
-          col = "tomato"
+          data = data_y_smooth,
+          col = y_col
         ) +
         geom_ribbon(
           mapping = aes(.data$x, ymin = .data$ymin, ymax = .data$ymax),
-          data = data_y,
-          fill = "tomato",
-          alpha = 0.2
-        ) +
-        scale_y_continuous(
-          sec.axis = sec_axis(~ y1_to_y2(.), substitute(y))
+          data = data_y_smooth,
+          fill = y_col, alpha = 0.2
         )
-    }
-
-    # if(use_group){
-    #    y_smooth_plot <- y_smooth_plot + facet_wrap(~group, ncol = 1)
-    # }
-
-    # browser()
-    # if x is continuous then y can be smoothed using glm / gam
-    # k %<>% as.integer %>% check_is_scalar_integer()
-
-
-    # if(use_group){
-    #    y_smooth_plot <- y_smooth_plot + facet_wrap(~group, ncol = 1)
-    # }
-    # y_smooth_data <- suppressMessages({
-    #   ggplot_build(y_smooth_plot)$data[[1]] %>% as_tibble()
-    # })
-
-
-    # if (nrow(y_smooth_data) > 0) {
-
-    # y_smooth_data %<>%
-    #   mutate(group = group_fct[.data$group]) %>%
-    #   select(.data$x, starts_with("y"), .data$group)
-
-    #   # y2 values
-    #   y2_min <- min(y_smooth_data$ymin)
-    #   y2_max <- max(y_smooth_data$ymax)
-    #   y2_dif <- y2_max - y2_min
-    #   y_smooth_data %<>% mutate_at(c("y", "ymin", "ymax"), y2_to_y1)
-    #   data_trans %<>% mutate_at("y", y2_to_y1)
-    #
-    #   # y2 ribbon
-    #   y_smooth_data
-    #   temp <- suppressMessages({
-    #     ggplot_build(plot_x)$data[[1]] %>% as_tibble()
-    #   })
-    #   data_trans
-    #
-    #   plot_x <- plot_x +
-    #     geom_line(aes(.data$x, .data$y), y_smooth_data, col = "tomato") +
-    #     geom_ribbon(aes(.data$x, ymin = .data$ymin, ymax = .data$ymax), y_smooth_data,
-    #                 fill = "tomato", alpha = 0.2
-    #     ) +
-    #     scale_y_continuous(sec.axis = sec_axis(~ y1_to_y2(.), substitute(y)))
-    # }
-
-  } else {
-    browser()
-    binary_y = is.integer(data_trans$y) &&
-      min(data_trans$y, na.rm = TRUE) == 0L &&
-      max(data_trans$y, na.rm = TRUE) == 1L
-    if (binary_y) {
-      data_trans %<>%
-        group_by(.data$x) %>%
-        summarise(
-          n = .data$y %>% length(),
-          mean = .data$y %>% mean(),
-          nbad = .data$y %>% sum()
-        )
-
-      # exact confidence intervals
-      binom_ci <- binom::binom.confint(
-        data_trans$nbad,
-        data_trans$n,
-        methods = "exact"
-      )
-      data_trans$lower <- binom_ci$lower
-      data_trans$upper <- binom_ci$upper
-
-      # y2 values
-      # what is counts_x ?
-      y1_max <- max(counts_x$n)
-      y2_min <- min(data_trans$lower)
-      y2_max <- max(data_trans$upper)
-      y2_dif <- y2_max - y2_min
-      data_trans %<>% mutate_at(c("mean", "lower", "upper"), y2_to_y1)
-
-      # y2 errorbars
-      plot_x <- plot_x +
-        # geom_line(aes(.data$x, .data$mean, group = 1), data_trans, col = "tomato") +
-        geom_point(aes(.data$x, .data$mean), data_trans, col = "tomato") +
-        geom_errorbar(aes(.data$x, ymin = .data$lower, ymax = .data$upper), data_trans,
-                      colour = "tomato", width = 0.5
-        ) +
-        scale_y_continuous(sec.axis = sec_axis(~ y1_to_y2(.), substitute(y)))
-    } else {
-      y1_max <- max(counts_x$n)
-      y2_min <- min(data_trans$y)
-      y2_max <- max(data_trans$y)
-      y2_dif <- y2_max - y2_min
-      data_trans %<>% mutate_at("y", y2_to_y1)
-
-      plot_x <- plot_x +
-        geom_boxplot(aes(.data$x, .data$y, group = .data$x), data_trans, col = "tomato", fill = NA) +
-        scale_y_continuous(sec.axis = sec_axis(~ y1_to_y2(.), substitute(y)))
     }
   }
-
-  plot_x +
-    labs(x = substitute(x), y = "count")
+  if (!continuous_x) {
+    if (y_smooth) {
+      if (y_method == "glm") {
+        data_y_smooth <- data_trans %>%
+          tidyr::nest(-group) %>%
+          mutate(
+            data = data %>%
+              map(function(data) {
+                model <- stats::glm(y ~ x, y_family, data)
+                pred_data <- select(data, x) %>% dplyr::distinct()
+                preds <- model %>% stats::predict(pred_data, se.fit = TRUE)
+                fam <- stats::family(model)
+                pred_data %>%
+                  mutate(
+                    y = fam$linkinv(preds$fit),
+                    ymin = fam$linkinv(preds$fit - 1.96 * preds$se.fit),
+                    ymax = fam$linkinv(preds$fit + 1.96 * preds$se.fit)
+                  )
+              })
+          ) %>%
+          tidyr::unnest() %>%
+          mutate(group = group_fct[.data$group]) %>%
+          select(.data$x, starts_with("y"), .data$group)
+        y2_lims <- data_y_smooth %>%
+          select(starts_with("y")) %>%
+          map(range, na.rm = TRUE) %>%
+          unname() %>%
+          unlist()
+        y2_min %<>% min(y2_lims, na.rm = TRUE)
+        y2_max %<>% max(y2_lims, na.rm = TRUE)
+        y2_dif <- y2_max - y2_min
+        data_y_smooth %<>%
+          mutate_at(c("y", "ymin", "ymax"), y2_to_y1)
+        # y2 errorbars
+        plt <- plt +
+          geom_point(
+            aes(.data$x, .data$y),
+            data = data_y_smooth,
+            col = y_col
+          ) +
+          geom_errorbar(
+            aes(.data$x, ymin = .data$ymin, ymax = .data$ymax),
+            data = data_y_smooth,
+            colour = y_col, width = 0.5
+          )
+      }
+      if (y_method == "boxplot") {
+        y2_min <- min(data_trans$y)
+        y2_max <- max(data_trans$y)
+        y2_dif <- y2_max - y2_min
+        data_trans %<>%
+          mutate_at("y", y2_to_y1)
+        plt <- plt +
+          geom_boxplot(
+            mapping = aes(.data$x, .data$y, group = .data$x),
+            data = data_trans,
+            col = y_col, fill = NA
+          )
+      }
+    }
+    if (y_points) {
+      data_y_points %<>%
+        mutate_at("x", jitter, 0.1)
+    }
+  }
+  if (y_points) {
+    data_y_points %<>%
+      mutate_at("y", y2_to_y1)
+    plt <- plt +
+      geom_point(
+        mapping = aes(.data$x, .data$y, group = .data$group),
+        data = data_y_points,
+        col = y_col, alpha = 0.3
+      )
+  }
+  if (y_smooth) {
+    plt <- plt +
+      labs(subtitle = str_c("y family = ", y_family, ", y method = ", y_method))
+  }
+  plt + scale_y_continuous(
+    sec.axis = sec_axis(
+      trans = ~ y1_to_y2(.),
+      name = substitute(y)
+    )
+  )
 }
 
 guess_family <- function(x) {
   type <- x %>% type_sum()
-  family <- NULL
   if (type == "lgl") {
-    family <- "binomial"
+    return("binomial")
   }
-  if (is.null(family) &&
-      min(x, na.rm = TRUE) == 0 &&
-      max(x, na.rm = TRUE) == 1 &&
-      n_distinct(x, na.rm = TRUE) == 2) {
-    family <- "binomial"
+  if (min(x, na.rm = TRUE) == 0 &&
+    max(x, na.rm = TRUE) == 1 &&
+    n_distinct(x, na.rm = TRUE) == 2) {
+    return("binomial")
   }
-  if (is.null(family) &&
-      type == "int" &&
-      min(x, na.rm = TRUE) >= 0) {
-    family <- "poisson"
+  if (type == "int" &&
+    min(x, na.rm = TRUE) >= 0) {
+    return("poisson")
   }
-  if (is.null(family) &&
-      type == "int" &&
-      min(x, na.rm = TRUE) >= 0) {
-    family <- "quasipoisson"
+  if (type == "dbl" &&
+    min(x, na.rm = TRUE) >= 0 &&
+    max(x, na.rm = TRUE) <= 1) {
+    return("quasibinomial")
   }
-  if (is.null(family) &&
-      type == "dbl" &&
-      min(x, na.rm = TRUE) >= 0 &&
-      max(x, na.rm = TRUE) <= 1) {
-    family <- "quasibinomial"
+  if (type == "dbl" &&
+    min(x, na.rm = TRUE) > 0) {
+    return("Gamma")
   }
-  if (is.null(family) &&
-      type == "dbl" &&
-      min(x, na.rm = TRUE) > 0) {
-    family <- "Gamma"
+  if (type == "dbl" &&
+    min(x, na.rm = TRUE) >= 0) {
+    return("quasipoisson")
   }
-  if (is.null(family)) {
-    family <- "gaussian"
-  }
-  family
+  "gaussian"
 }
-

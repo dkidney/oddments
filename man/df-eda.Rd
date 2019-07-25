@@ -9,8 +9,9 @@
 skim(data, verbose = TRUE)
 
 sketch(data, x, y, group, min_unique_continuous = 10,
-  max_unique_discrete = 50, max_distinct_group = 3, x_bins = 30,
-  y_method = NULL, y_family = NULL, y_points = NULL, k = 10)
+  max_unique_discrete = 50, max_distinct_group = 3, x_bins = NULL,
+  x_binwidth = NULL, x_col = "dodgerblue", y_points = NULL,
+  y_method = NULL, y_family = NULL, y_col = "grey30", k = 10)
 }
 \arguments{
 \item{data}{a data frame}
@@ -38,11 +39,17 @@ exceeds \code{max_distinct_group} a error will be thrown}
 \item{x_bins}{passed to \link[ggplot2]{geom_histogram} (ignored if \code{x} is
 discrete)}
 
+\item{x_binwidth}{TODO}
+
+\item{x_col}{TODO}
+
+\item{y_points}{TODO}
+
 \item{y_method}{TODO}
 
 \item{y_family}{TODO}
 
-\item{y_points}{TODO}
+\item{y_col}{TODO}
 
 \item{k}{TODO}
 }
@@ -88,29 +95,28 @@ as_tibble(iris)
 results <- skim(iris)
 print(results)
 
-iris \%>\% sketch(Sepal.Length)
-iris \%>\% sketch(Sepal.Width)
-iris \%>\% sketch(Petal.Length)
-iris \%>\% sketch(Petal.Length, group = Species)
-iris \%>\% sketch(Petal.Length, Petal.Width, y_points = FALSE, y_method = "none")
-iris \%>\% sketch(Petal.Length, Petal.Width, y_points = TRUE, y_method = "none")
-iris \%>\% sketch(Petal.Length, Petal.Width, y_points = TRUE, y_method = "glm")
-iris \%>\% sketch(Petal.Length, Petal.Width)
-iris \%>\% sketch(Petal.Length, Petal.Width, y_points = TRUE)
-iris \%>\% sketch(Petal.Length, Petal.Width, group = Species) # fix
-
 iris \%>\% sketch(Species)
-iris \%>\% sketch(Species, Sepal.Length) # fix
-iris \%>\% sketch(Species, Sepal.Width) # fix
-iris \%>\% sketch(Species, Petal.Length) # fix
-iris \%>\% sketch(Species, Petal.Width) # fix
+iris \%>\% sketch(Species, Sepal.Length)
+iris \%>\% sketch(Species, Sepal.Length, y_method = "glm")
+iris \%>\% sketch(Species, Sepal.Length, y_method = "none", y_points = TRUE)
+iris \%>\% sketch(Species, Sepal.Length, y_method = "glm", y_points = TRUE)
+
 iris \%>\% sketch(Sepal.Length)
-iris \%>\% sketch(Sepal.Length, binwidth = 0.5) # fix
-iris \%>\% sketch(Sepal.Length, bins = 50) # fix
-iris \%>\% sketch(Sepal.Length, breaks = seq(4, 8, 0.25)) # fix
+iris \%>\% sketch(Sepal.Length, x_binwidth = 0.5)
+iris \%>\% sketch(Sepal.Length, x_bins = 50)
+iris \%>\% sketch(bin(Sepal.Length, breaks = seq(4, 8, 0.25)))
+iris \%>\% sketch(bin_pretty(Sepal.Length))
+
 iris \%>\% sketch(Sepal.Length, Sepal.Width)
-iris \%>\% sketch(Sepal.Length, Sepal.Width, y_method = "glm", y_points = TRUE)
-iris \%>\% sketch(Sepal.Length, Sepal.Width, Species, y_method = "glm")
+iris \%>\% sketch(Sepal.Length, Sepal.Width, y_points = TRUE)
+iris \%>\% sketch(Sepal.Length, Sepal.Width, y_points = TRUE,  y_method = "glm")
+iris \%>\% sketch(Sepal.Length, Sepal.Width, y_points = TRUE,  y_method = "gam")
+iris \%>\% sketch(Sepal.Length, Sepal.Width, y_points = TRUE,  y_method = "none")
+iris \%>\% sketch(Sepal.Length, Sepal.Width, Species)
+iris \%>\% sketch(Sepal.Length, Sepal.Width, Species, y_points = TRUE)
+iris \%>\% sketch(Sepal.Length, Sepal.Width, Species, y_points = TRUE,  y_method = "glm")
+iris \%>\% sketch(Sepal.Length, Sepal.Width, Species, y_points = TRUE,  y_method = "gam")
+iris \%>\% sketch(Sepal.Length, Sepal.Width, Species, y_points = TRUE,  y_method = "none")
 
 
 # mtcars -----
@@ -122,7 +128,6 @@ print(results)
 mtcars \%>\% sketch(mpg)
 mtcars \%>\% sketch(disp)
 mtcars \%>\% sketch(mpg, disp)
-mtcars \%>\% sketch(mpg, disp, y_method = "glm")
 mtcars \%>\% sketch(mpg, disp, y_method = "gam")
 mtcars \%>\% sketch(mpg, vs)
 mtcars \%>\% sketch(mpg, vs, y_method = "glm")
@@ -132,61 +137,88 @@ mtcars \%>\% sketch(bin_quantile(mpg, 5))
 mtcars \%>\% sketch(bin_quantile(mpg, 100))
 
 mtcars \%>\% sketch(bin_pretty(mpg))
+mtcars \%>\% sketch(bin_pretty(mpg), vs)
 mtcars \%>\% sketch(bin_pretty(mpg), vs, y_method = "glm")
-mtcars \%>\% sketch(bin_pretty(mpg), am, y_method = "glm")
 
 
-
-
-as_tibble(esoph)
-results <- skim(esoph)
-print(results)
+# attenu -----
 
 as_tibble(attenu)
 results <- skim(attenu)
 print(results)
 
+attenu \%>\% sketch(dist, accel)
+attenu \%>\% sketch(log(dist), accel)
+attenu \%>\% sketch(log(dist), log(accel))
+attenu \%>\% sketch(log(dist), log(accel), y_method = "glm")
+attenu \%>\% sketch(log(dist), log(accel), y_method = "gam")
+
+
+# nycflights13::airports -----
+
 nycflights13::airports
 results <- skim(nycflights13::airports)
 print(results)
+
+
+# nycflights13::planes -----
 
 nycflights13::planes
 results <- skim(nycflights13::planes)
 print(results)
 
+
+# nycflights13::weather -----
+
 nycflights13::weather
 results <- skim(nycflights13::weather)
 print(results)
+
+nycflights13::weather \%>\%
+    select_if(is.numeric) \%>\% 
+    filter(complete.cases(.)) \%>\% 
+    sample_frac(0.05) \%>\% 
+    pairs()
+
+nycflights13::weather \%>\% 
+    sample_frac(0.1) \%>\% 
+    sketch(month, temp, y_method = "gam", x_bins = 12, x_binwidth = 0.5)
+
+nycflights13::weather \%>\% 
+    sample_frac(0.1) \%>\% 
+    sketch(as.factor(month), temp, y_method = "glm")
+
+
+# nycflights13::flights -----
 
 nycflights13::flights
 results <- skim(nycflights13::flights)
 print(results)
 
-ggplot2::theme_set(theme_oddments())
 
-# discrete x
-mtcars \%>\% sketch(as.integer(cyl))
-mtcars \%>\% sketch(as.character(am))
+mtcars \%>\% pairs
 
-# continuous x
 mtcars \%>\% sketch(mpg)
-mtcars \%>\% sketch(log(mpg))
-mtcars \%>\% sketch(mpg, x_bins = 3)
+mtcars \%>\% sketch(mpg, disp)
+mtcars \%>\% sketch(mpg, disp, am)
+mtcars \%>\% sketch(mpg, disp, vs)
+mtcars \%>\% sketch(mpg, disp, cyl)
 
-# discrete x and continuous y
-mtcars \%>\% sketch(as.integer(gear), qsec)
+mtcars \%>\% sketch(as.character(gear), mpg)
+mtcars \%>\% sketch(as.character(gear), qsec)
+mtcars \%>\% sketch(as.character(gear), am)
+mtcars \%>\% sketch(as.character(gear), vs)
 
-# discrete x, binary y
-mtcars \%>\% sketch(as.integer(gear), as.integer(vs))
+mtcars \%>\% sketch(gear, vs)
+mtcars \%>\% sketch(gear, am)
+mtcars \%>\% sketch(as.integer(gear), am)
 
-# continuous x, continuous y
 mtcars \%>\% sketch(mpg, disp)
 mtcars \%>\% sketch(mpg, disp, y_method = "glm")
-mtcars \%>\% sketch(mpg, disp, y_method = "glm", y_points = TRUE)
+mtcars \%>\% sketch(mpg, disp, y_method = "gam")
 
-# continuous x, binary y
-mtcars \%>\% sketch(mpg, as.integer(vs))
-mtcars \%>\% sketch(mpg, as.integer(vs), bin = TRUE)
+mtcars \%>\% sketch(mpg, vs)
+mtcars \%>\% sketch(mpg, vs, y_method = "gam")
 
 mtcars \%>\% sketch(cyl)
 mtcars \%>\% sketch(cyl / disp)
