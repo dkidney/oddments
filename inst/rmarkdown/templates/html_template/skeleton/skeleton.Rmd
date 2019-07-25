@@ -98,7 +98,7 @@ par(
 # engines -----
 knitr::opts_chunk$set(
     engine.path = list(
-        python = "/usr/local/Cellar/python/3.7.3/bin/python3"
+        python = "/usr/local/anaconda3/envs/py3/bin/python"
     )
 )
 stopifnot(file.exists(knitr::opts_chunk$get("engine.path")$python))
@@ -107,7 +107,7 @@ stopifnot(file.exists(knitr::opts_chunk$get("engine.path")$python))
 knitr::opts_chunk$set(
     python.reticulate = TRUE
 )
-reticulate::use_python(knitr::opts_chunk$get("engine.path"))
+reticulate::use_python(knitr::opts_chunk$get("engine.path")$python)
 # paged tables -----
 # when using `df_print: paged` in yaml header
 knitr::opts_chunk$set(
@@ -120,12 +120,14 @@ knitr::opts_chunk$set(
     rownames.print = TRUE # When set to FALSE turns off row names.
 )
 # option templates -----
+# cat_file
 knitr::opts_template$set(
     cat_file = list(eval = TRUE, echo = FALSE, results = "asis")
 )
 cat_file = function(x){
-    y = readLines(x, warn = FALSE) %>% paste0(collapse = "\n")
-    paste0("```", tools::file_ext(x), "\n", y, "\n```")
+    y = paste0(readLines(x, warn = FALSE), collapse = "\n")
+    cat("`", x, "`\n")
+    cat(paste0("```", tools::file_ext(x), "\n", y, "\n```"))
 }
 # package options -----
 # see ?opts_knit
@@ -319,15 +321,15 @@ mtcars %>% ggplot(aes(disp)) + geom_histogram()
 
 ```{r, results='hold'}
 python_engine = knitr::opts_chunk$get("engine.path")$python %T>% print
-eval_python = file.exists(python_engine) %T>% print
+python_engine_exists = file.exists(python_engine) %T>% print
 ```
 
-```{python, python.reticulate=FALSE, eval=eval_python}
+```{python, python.reticulate=FALSE, eval=python_engine_exists}
 import sys
 print(sys.version)
 ```
 
-```{python, python.reticulate=FALSE, eval=eval_python}
+```{python, python.reticulate=FALSE, eval=python_engine_exists}
 import os
 print(os.getcwd())
 ```

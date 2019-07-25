@@ -31,7 +31,9 @@ and \link[kableExtra]{scroll_box}. Dots get passed to \link[knitr]{kable}.
 defaults \code{row.names=FALSE} and \code{right=FALSE}
 }
 
-See: https://rstudio.github.io/DT
+https://rstudio.github.io/DT
+
+https://rstudio.github.io/DT/options.html
 }
 \examples{
 \dontrun{
@@ -41,7 +43,7 @@ iris \%>\% df_kable(scroll = TRUE) \%>\% view_html()
 
 iris \%>\% DT::datatable()
 iris \%>\% df_datatable()
-    
+
 iris \%>\% head \%>\% print.data.frame()
 iris \%>\% head \%>\% df_print()
 }

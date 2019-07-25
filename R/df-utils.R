@@ -2,7 +2,7 @@
 #' @rdname df-utils
 #' @name df-utils
 #' @title Data frame utils
-#' @description 
+#' @description
 #' \itemize{
 #'   \item \code{df_kable()} - wraps \link[knitr]{kable}, \link[kableExtra]{kable_styling}
 #'   and \link[kableExtra]{scroll_box}. Dots get passed to \link[knitr]{kable}.
@@ -10,19 +10,21 @@
 #'   \item \code{df_print()} - wraps \link[base]{print.data.frame} and uses
 #'   defaults \code{row.names=FALSE} and \code{right=FALSE}
 #' }
-#' 
-#' See: https://rstudio.github.io/DT
+#'
+#' https://rstudio.github.io/DT
+#'
+#' https://rstudio.github.io/DT/options.html
 #' @param x (data.frame)
 #' @param ... additional arguments to pass to the underlying function (see Details)
-#' @examples 
+#' @examples
 #' \dontrun{
 #' iris %>% knitr::kable() %>% view_html()
 #' iris %>% df_kable() %>% view_html()
 #' iris %>% df_kable(scroll = TRUE) %>% view_html()
-#' 
+#'
 #' iris %>% DT::datatable()
 #' iris %>% df_datatable()
-#'     
+#'
 #' iris %>% head %>% print.data.frame()
 #' iris %>% head %>% df_print()
 #' }

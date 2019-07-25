@@ -44,7 +44,7 @@ skim <- function(data,
                  verbose = TRUE) {
   stopifnot(is.data.frame(data))
   heading(deparse(substitute(data)))
-  
+
   msg <- function(msg = "", vars = "", fun = concern) {
     vars %<>%
       sort %>%
@@ -57,10 +57,10 @@ skim <- function(data,
       )
     fun(msg, vars)
   }
-  
+
   # df to store results
   out <- tibble(name = colnames(data))
-  
+
   # size & dim -----
   N <- nrow(data)
   if (verbose) {
@@ -76,7 +76,7 @@ skim <- function(data,
     item("cols:", dims[2])
     item("complete cases:", ncomp, str_c("(", pcomp, "%)"))
   }
-  
+
   # col types -----
   if (verbose) bullet("col types")
   out$type <- data %>% map_chr(type_sum)
@@ -102,7 +102,7 @@ skim <- function(data,
   x <- data %>%
     select(which(valid)) %>%
     as_tibble()
-  
+
   # uniques -----
   if (verbose) bullet("checking number of unique values...")
   out$nun <- x %>% map_int(n_distinct, na.rm = TRUE)
@@ -130,7 +130,7 @@ skim <- function(data,
       msg(str_c(nrow(info), " cat vars with > 30 unique values:"), info$name)
     }
   }
-  
+
   # non-finite -----
   if (verbose) bullet("checking for non-finite values...")
   # > NA -----
@@ -180,7 +180,7 @@ skim <- function(data,
   if (nrow(info) > 0) {
     msg(str_c(nrow(info), " vars with < 0.5 finite values:"), info$name)
   }
-  
+
   # distribution -----
   if (verbose) bullet("checking distributions...")
   # > pos -----
@@ -336,7 +336,7 @@ skim <- function(data,
       msg(str_c(nrow(info), " cat vars with prop mode > 0.9:"), info$name, item)
     }
   }
-  
+
   out %>%
     select(one_of(
       "name",
@@ -388,7 +388,7 @@ skim <- function(data,
 #' @param k TODO
 #' @importFrom dplyr group_by n summarise transmute ungroup
 #' @importFrom ggplot2 aes facet_wrap ggplot_build labs scale_y_continuous sec_axis
-#' @importFrom ggplot2 ggplot     
+#' @importFrom ggplot2 ggplot
 #' @importFrom ggplot2 geom_bar
 #' @importFrom ggplot2 geom_boxplot
 #' @importFrom ggplot2 geom_errorbar
@@ -413,7 +413,8 @@ sketch <- function(data,
   stopifnot(!missing(x))
   use_y <- !missing(y)
   use_group <- !missing(group)
-  
+  # message("groups ", use_group)
+
   # data trans -----
   quos <- list(x = enquo(x))
   if (use_y) quos$y <- enquo(y)
@@ -421,12 +422,12 @@ sketch <- function(data,
   data_trans <- data %>%
     as_tibble() %>%
     transmute(!!!quos)
-  
+
   # var names -----
   var_names <- list(x = quo_name(quos$x))
   # if(use_y) var_names$y = quo_name(quos$y)
   if (use_group) var_names$group <- quo_name(quos$group)
-  
+
   # check x -----
   x_type <- data_trans$x %>% type_sum()
   if (!x_type %in% c("chr", "dbl", "fct", "int", "lgl", "ord")) {
@@ -436,7 +437,7 @@ sketch <- function(data,
   continuous_x <- x_type %in% c("dbl", "int")
   # continuous_x = x_type %in% c("dbl", "int", "date")
   # x_is_date = x_type %in% "date"
-  
+
   # check y -----
   if (use_y) {
     y_type <- data_trans$y %>% type_sum()
@@ -480,7 +481,7 @@ sketch <- function(data,
       }
     }
   }
-  
+
   # check group -----
   if (use_group) {
     if (n_distinct(data_trans$group) > max_distinct_group) {
@@ -492,8 +493,11 @@ sketch <- function(data,
     data_trans$group <- 1
   }
   group_fct <- levels(as.factor(data_trans$group)) %>% factor(., .)
-  
+
   # data x -----
+  # this section prepares x data for plotting using geom_bar
+  # if continuous, then use geom_histogram to discretise x and get calculate totals
+  # otherwise calculate totals for each level of x
   if (continuous_x) {
     data_x <- data_trans %>%
       ggplot2::ggplot(.) +
@@ -520,10 +524,12 @@ sketch <- function(data,
       mutate(prop = .data$n / sum(.data$n), width = 0.9) %>%
       ungroup()
   }
-  
+
   # plot x -----
+  # message("x")
+  # message("  continuous_x ", continuous_x)
   suppressWarnings({
-    plot <- data_x %>%
+    plot_x <- data_x %>%
       ggplot() +
       geom_bar(
         aes(.data$x, .data$prop, group = .data$group, width = .data$width),
@@ -535,74 +541,172 @@ sketch <- function(data,
       theme(legend.position = "none")
   })
   if (use_group) {
-    plot <- plot + facet_wrap(~group, ncol = 1)
+    plot_x <- plot_x + facet_wrap(~group, ncol = 1)
   }
-  
-  # plot y -----
   if (!use_y) {
-    return(plot) 
+    return(plot_x)
   }
-  
+
+  # plot y -----
+  # message("y")
+  # message("  y_family ", y_family)
+  # message("  y_smooth ", y_smooth)
+  # message("  y_points ", y_points)
   # helper functions for making second y axis
-  y1_to_y2 <- function(y1) (y1 / y1_max * y2_rng) + y2_min
-  y2_to_y1 <- function(y2) (y2 - y2_min) / y2_rng * y1_max
-  
+
+  y2_min = y2_max = y2_dif = NA_real_
+  y1_max <- max(data_x$prop)
+  y1_to_y2 <- function(y1) (y1 / y1_max * y2_dif) + y2_min
+  y2_to_y1 <- function(y2) (y2 - y2_min) / y2_dif * y1_max
+
   if (continuous_x) {
-    # k %<>% as.integer %>% check_is_scalar_integer()
-    
-    data_x <- suppressMessages({
-      ggplot_build(plot)$data[[1]] %>% as_tibble()
-    })
-    
-    plot_y <- data_trans %>%
-      ggplot(aes(.data$x, .data$y)) +
-      geom_smooth(
-        method = y_method,
-        method.args = list(family = y_family),
-        formula = if (y_method == "gam") {
-          stats::formula(str_c("y ~ s(x, k = ", k, ")"))
-        } else {
-          y ~ x
-        }
-      )
-    
-    if(use_group){
-      browser()
-       plot_y <- plot_y + facet_wrap(~group, ncol = 1)
+    browser()
+
+    plot_y_temp = data_trans %>%
+      ggplot(aes(.data$x, .data$y, group = .data$group))
+
+    if(y_points){
+      plot_y_points <- plot_y_temp + geom_point()
+      data_y_points <- suppressMessages({
+        plot_y_points %>%
+          ggplot_build() %>%
+          pluck("data") %>%
+          pluck(1) %>%
+          as_tibble() %>%
+          mutate(group = group_fct[.data$group]) %>%
+          select(.data$x, starts_with("y"), .data$group)
+      })
+      y2_min %<>% min(data_y_points$y, na.rm = TRUE)
+      y2_max %<>% max(data_y_points$y, na.rm = TRUE)
     }
-    
+
+    if(y_smooth){
+      plot_y_smooth <- plot_y_temp +
+        geom_smooth(
+          method = y_method,
+          method.args = list(family = y_family),
+          formula = if (y_method == "gam") {
+            stats::formula(str_c("y ~ s(x, k = ", k, ")"))
+          } else {
+            y ~ x
+          }
+        )
+      data_y_smooth <- suppressMessages({
+        plot_y_smooth %>%
+          ggplot_build() %>%
+          pluck("data") %>%
+          pluck(1) %>%
+          as_tibble() %>%
+          mutate(group = group_fct[.data$group]) %>%
+          select(.data$x, starts_with("y"), .data$group)
+      })
+      y2_min %<>% min(data_y_smooth$ymin, na.rm = TRUE)
+      y2_max %<>% max(data_y_smooth$ymax, na.rm = TRUE)
+    }
+
     data_y <- suppressMessages({
-      ggplot_build(plot_y)$data[[1]] %>% as_tibble()
+      plot_y %>%
+        ggplot_build() %>%
+        pluck("data") %>%
+        pluck(1) %>%
+        as_tibble() %>%
+        mutate(group = group_fct[.data$group]) %>%
+        select(.data$x, starts_with("y"), .data$group)
     })
-    
-    if (nrow(data_y) > 0) {
-      
-      # y2 values
-      y1_max <- max(data_x$y)
-      y2_min <- min(data_y$ymin)
-      y2_max <- max(data_y$ymax)
-      y2_rng <- y2_max - y2_min
-      data_y %<>% mutate_at(c("y", "ymin", "ymax"), y2_to_y1)
-      data_trans %<>% mutate_at("y", y2_to_y1)
-      
-      # y2 points
-      if (y_points) {
-        y2_min %<>% min(data_trans$y)
-        y2_max %<>% max(data_trans$y)
-        plot <- plot +
-          geom_point(aes(.data$x, .data$y), data_trans, col = "red")
-      }
-      
-      # y2 ribbon
-      browser()
-      plot <- plot +
-        geom_line(aes(.data$x, .data$y), data_y, col = "red") +
-        geom_ribbon(aes(.data$x, ymin = .data$ymin, ymax = .data$ymax), data_y,
-                    fill = "red", alpha = 0.2
-        ) +
-        scale_y_continuous(sec.axis = sec_axis(~ y1_to_y2(.), substitute(y)))
+
+    # rescale y values in data_y
+    # so that range of sec y axis matches range of y axis in final plot
+    y2_lim = data_y %>%
+      select(starts_with("y")) %>%
+      map(range) %>%
+      unlist %>%
+      range()
+    y2_min = min(y2_lim)
+    y2_max = max(y2_lim)
+    y2_dif = abs(diff(range(y2_lim)))
+    y1_max <- max(data_x$prop)
+    y1_to_y2 <- function(y1) (y1 / y1_max * y2_dif) + y2_min
+    y2_to_y1 <- function(y2) (y2 - y2_min) / y2_dif * y1_max
+    data_y %<>%
+      mutate_at(
+        vars(starts_with("y")),
+        y2_to_y1
+      )
+
+    if(y_points){
+      plot_x <- plot_x +
+        geom_point(
+          mapping = aes(.data$x, .data$y, group = .data$group),
+          data = data_y,
+          col = "tomato"
+        )
     }
+
+    if(y_smooth){
+      plot_x <- plot_x +
+        geom_line(
+          mapping = aes(.data$x, .data$y),
+          data = data_y,
+          col = "tomato"
+        ) +
+        geom_ribbon(
+          mapping = aes(.data$x, ymin = .data$ymin, ymax = .data$ymax),
+          data = data_y,
+          fill = "tomato",
+          alpha = 0.2
+        ) +
+        scale_y_continuous(
+          sec.axis = sec_axis(~ y1_to_y2(.), substitute(y))
+        )
+    }
+
+    # if(use_group){
+    #    y_smooth_plot <- y_smooth_plot + facet_wrap(~group, ncol = 1)
+    # }
+
+    # browser()
+    # if x is continuous then y can be smoothed using glm / gam
+    # k %<>% as.integer %>% check_is_scalar_integer()
+
+
+    # if(use_group){
+    #    y_smooth_plot <- y_smooth_plot + facet_wrap(~group, ncol = 1)
+    # }
+    # y_smooth_data <- suppressMessages({
+    #   ggplot_build(y_smooth_plot)$data[[1]] %>% as_tibble()
+    # })
+
+
+    # if (nrow(y_smooth_data) > 0) {
+
+    # y_smooth_data %<>%
+    #   mutate(group = group_fct[.data$group]) %>%
+    #   select(.data$x, starts_with("y"), .data$group)
+
+    #   # y2 values
+    #   y2_min <- min(y_smooth_data$ymin)
+    #   y2_max <- max(y_smooth_data$ymax)
+    #   y2_dif <- y2_max - y2_min
+    #   y_smooth_data %<>% mutate_at(c("y", "ymin", "ymax"), y2_to_y1)
+    #   data_trans %<>% mutate_at("y", y2_to_y1)
+    #
+    #   # y2 ribbon
+    #   y_smooth_data
+    #   temp <- suppressMessages({
+    #     ggplot_build(plot_x)$data[[1]] %>% as_tibble()
+    #   })
+    #   data_trans
+    #
+    #   plot_x <- plot_x +
+    #     geom_line(aes(.data$x, .data$y), y_smooth_data, col = "tomato") +
+    #     geom_ribbon(aes(.data$x, ymin = .data$ymin, ymax = .data$ymax), y_smooth_data,
+    #                 fill = "tomato", alpha = 0.2
+    #     ) +
+    #     scale_y_continuous(sec.axis = sec_axis(~ y1_to_y2(.), substitute(y)))
+    # }
+
   } else {
+    browser()
     binary_y = is.integer(data_trans$y) &&
       min(data_trans$y, na.rm = TRUE) == 0L &&
       max(data_trans$y, na.rm = TRUE) == 1L
@@ -614,46 +718,46 @@ sketch <- function(data,
           mean = .data$y %>% mean(),
           nbad = .data$y %>% sum()
         )
-      
+
       # exact confidence intervals
       binom_ci <- binom::binom.confint(
-        data_trans$nbad, 
-        data_trans$n, 
+        data_trans$nbad,
+        data_trans$n,
         methods = "exact"
       )
       data_trans$lower <- binom_ci$lower
       data_trans$upper <- binom_ci$upper
-      
+
       # y2 values
-      browser() # what is counts_x ?
+      # what is counts_x ?
       y1_max <- max(counts_x$n)
       y2_min <- min(data_trans$lower)
       y2_max <- max(data_trans$upper)
-      y2_rng <- y2_max - y2_min
+      y2_dif <- y2_max - y2_min
       data_trans %<>% mutate_at(c("mean", "lower", "upper"), y2_to_y1)
-      
+
       # y2 errorbars
-      plot <- plot +
-        # geom_line(aes(.data$x, .data$mean, group = 1), data_trans, col = "red") +
-        geom_point(aes(.data$x, .data$mean), data_trans, col = "red") +
+      plot_x <- plot_x +
+        # geom_line(aes(.data$x, .data$mean, group = 1), data_trans, col = "tomato") +
+        geom_point(aes(.data$x, .data$mean), data_trans, col = "tomato") +
         geom_errorbar(aes(.data$x, ymin = .data$lower, ymax = .data$upper), data_trans,
-                      colour = "red", width = 0.5
+                      colour = "tomato", width = 0.5
         ) +
         scale_y_continuous(sec.axis = sec_axis(~ y1_to_y2(.), substitute(y)))
     } else {
       y1_max <- max(counts_x$n)
       y2_min <- min(data_trans$y)
       y2_max <- max(data_trans$y)
-      y2_rng <- y2_max - y2_min
+      y2_dif <- y2_max - y2_min
       data_trans %<>% mutate_at("y", y2_to_y1)
-      
-      plot <- plot +
-        geom_boxplot(aes(.data$x, .data$y, group = .data$x), data_trans, col = "red", fill = NA) +
+
+      plot_x <- plot_x +
+        geom_boxplot(aes(.data$x, .data$y, group = .data$x), data_trans, col = "tomato", fill = NA) +
         scale_y_continuous(sec.axis = sec_axis(~ y1_to_y2(.), substitute(y)))
     }
   }
-  
-  plot +
+
+  plot_x +
     labs(x = substitute(x), y = "count")
 }
 
@@ -695,3 +799,4 @@ guess_family <- function(x) {
   }
   family
 }
+
