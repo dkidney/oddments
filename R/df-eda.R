@@ -44,7 +44,7 @@ skim <- function(data,
                  verbose = TRUE) {
   stopifnot(is.data.frame(data))
   heading(deparse(substitute(data)))
-
+  
   msg <- function(msg = "", vars = "", fun = concern) {
     vars %<>%
       sort %>%
@@ -57,10 +57,10 @@ skim <- function(data,
       )
     fun(msg, vars)
   }
-
+  
   # df to store results
   out <- tibble(name = colnames(data))
-
+  
   # size & dim -----
   N <- nrow(data)
   if (verbose) {
@@ -76,7 +76,7 @@ skim <- function(data,
     item("cols:", dims[2])
     item("complete cases:", ncomp, str_c("(", pcomp, "%)"))
   }
-
+  
   # col types -----
   if (verbose) bullet("col types")
   out$type <- data %>% map_chr(type_sum)
@@ -102,7 +102,7 @@ skim <- function(data,
   x <- data %>%
     select(which(valid)) %>%
     as_tibble()
-
+  
   # uniques -----
   if (verbose) bullet("checking number of unique values...")
   out$nun <- x %>% map_int(n_distinct, na.rm = TRUE)
@@ -115,14 +115,14 @@ skim <- function(data,
     if (nrow(info) > 0) {
       msg(str_c(nrow(info), " vars with only two unique values:"), info$name, item)
     }
-    # > min_distinct_num -----
+    # min unique num
     info <- out %>%
       filter(.data$type %in% c("dbl", "int")) %>%
       filter(.data$nun < 10)
     if (nrow(info) > 0) {
       msg(str_c(nrow(info), " num vars with < 10 unique values:"), info$name)
     }
-    # > max_distinct_cat -----
+    # max unique cat
     info <- out %>%
       filter(.data$type %in% c("chr", "fct", "ord")) %>%
       filter(.data$nun > 30)
@@ -130,10 +130,10 @@ skim <- function(data,
       msg(str_c(nrow(info), " cat vars with > 30 unique values:"), info$name)
     }
   }
-
+  
   # non-finite -----
   if (verbose) bullet("checking for non-finite values...")
-  # > NA -----
+  # NA
   out$nna <- x %>% map_int(~ sum(is.na(.x)))
   out$pna <- out$nna / N
   if (verbose) {
@@ -142,7 +142,7 @@ skim <- function(data,
       msg(str_c(nrow(info), " vars with NA values:"), info$name, panic)
     }
   }
-  # > NaN -----
+  # NaN
   out$nnan <- x %>% map_int(~ sum(is.nan(.x)))
   out$pnan <- out$nnan / N
   if (verbose) {
@@ -151,7 +151,7 @@ skim <- function(data,
       msg(str_c(nrow(info), " vars with NaN values:"), info$name, panic)
     }
   }
-  # > Inf -----
+  # Inf
   out$ninf <- x %>%
     map_if(
       ~ type_sum(.x) %in% c("dbl", "int"),
@@ -166,7 +166,7 @@ skim <- function(data,
       msg(str_c(nrow(info), " vars with inf values:"), info$name, panic)
     }
   }
-  # > finite -----
+  # finite
   out %<>%
     mutate(
       nfin = N - .data$nna - .data$nnan - .data$ninf,
@@ -180,7 +180,7 @@ skim <- function(data,
   if (nrow(info) > 0) {
     msg(str_c(nrow(info), " vars with < 0.5 finite values:"), info$name)
   }
-
+  
   # distribution -----
   if (verbose) bullet("checking distributions...")
   # > pos -----
@@ -313,9 +313,7 @@ skim <- function(data,
       ~ type_sum(.x) %in% c("chr", "fct", "ord"),
       ~ .x %>%
         table() %>%
-        {
-          .[which.max(.)]
-        },
+        {.[which.max(.)]},
       # ~ .x %>% keep(is.finite(.x)) %>% max(.x),
       .else = ~NULL
     )
@@ -336,7 +334,7 @@ skim <- function(data,
       msg(str_c(nrow(info), " cat vars with prop mode > 0.9:"), info$name, item)
     }
   }
-
+  
   out %>%
     select(one_of(
       "name",
@@ -425,7 +423,7 @@ sketch <- function(data,
   stopifnot(!missing(x))
   use_y <- !missing(y)
   use_group <- !missing(group)
-
+  
   # data trans -----
   quos <- list(x = enquo(x))
   if (use_y) quos$y <- enquo(y)
@@ -433,12 +431,12 @@ sketch <- function(data,
   data_trans <- data %>%
     as_tibble() %>%
     transmute(!!!quos)
-
+  
   # var names -----
   var_names <- list(x = quo_name(quos$x))
   if (use_y) var_names$y <- quo_name(quos$y)
   if (use_group) var_names$group <- quo_name(quos$group)
-
+  
   # check x -----
   x_type <- data_trans$x %>% type_sum()
   if (!x_type %in% c("chr", "dbl", "fct", "int", "lgl", "ord")) {
@@ -448,7 +446,7 @@ sketch <- function(data,
   continuous_x <- x_type %in% c("dbl", "int")
   # continuous_x = x_type %in% c("dbl", "int", "date")
   # x_is_date = x_type %in% "date"
-
+  
   # check y -----
   if (use_y) {
     y_type <- data_trans$y %>% type_sum()
@@ -507,7 +505,7 @@ sketch <- function(data,
       use_y <- FALSE
     }
   }
-
+  
   # check group -----
   if (use_group) {
     if (n_distinct(data_trans$group) > max_distinct_group) {
@@ -519,7 +517,7 @@ sketch <- function(data,
     data_trans$group <- 1
   }
   group_fct <- levels(as.factor(data_trans$group)) %>% factor(., .)
-
+  
   # data x -----
   # this section prepares x data for plotting using geom_bar
   # if continuous, then use geom_histogram to discretise x and get calculate totals
@@ -557,7 +555,7 @@ sketch <- function(data,
       mutate(prop = .data$n / sum(.data$n), width = 0.9) %>%
       ungroup()
   }
-
+  
   # plot x -----
   suppressWarnings({
     plt <- data_x %>%
@@ -581,18 +579,18 @@ sketch <- function(data,
   if (!use_y) {
     return(plt)
   }
-
+  
   # plot y -----
-
+  
   # helper functions for making second y axis
   y1_max <- max(data_x$prop)
   y2_min <- y2_max <- y2_dif <- NA_real_
   y1_to_y2 <- function(y1) (y1 / y1_max * y2_dif) + y2_min
   y2_to_y1 <- function(y2) (y2 - y2_min) / y2_dif * y1_max
-
+  
   plot_y_temp <- data_trans %>%
     ggplot(aes(.data$x, .data$y, group = .data$group))
-
+  
   if (y_points) {
     plot_y_points <- plot_y_temp + geom_point()
     data_y_points <- suppressMessages({
@@ -608,7 +606,7 @@ sketch <- function(data,
     y2_max %<>% max(data_y_points$y, na.rm = TRUE)
     y2_dif <- y2_max - y2_min
   }
-
+  
   if (continuous_x) {
     if (y_smooth) {
       plot_y_smooth <- plot_y_temp +
@@ -641,7 +639,7 @@ sketch <- function(data,
       y2_max %<>% max(y2_lims, na.rm = TRUE)
       y2_dif <- y2_max - y2_min
     }
-
+    
     if (y_smooth) {
       data_y_smooth %<>%
         mutate_at(c("y", "ymin", "ymax"), y2_to_y1)
@@ -751,25 +749,25 @@ guess_family <- function(x) {
     return("binomial")
   }
   if (min(x, na.rm = TRUE) == 0 &&
-    max(x, na.rm = TRUE) == 1 &&
-    n_distinct(x, na.rm = TRUE) == 2) {
+      max(x, na.rm = TRUE) == 1 &&
+      n_distinct(x, na.rm = TRUE) == 2) {
     return("binomial")
   }
   if (type == "int" &&
-    min(x, na.rm = TRUE) >= 0) {
+      min(x, na.rm = TRUE) >= 0) {
     return("poisson")
   }
   if (type == "dbl" &&
-    min(x, na.rm = TRUE) >= 0 &&
-    max(x, na.rm = TRUE) <= 1) {
+      min(x, na.rm = TRUE) >= 0 &&
+      max(x, na.rm = TRUE) <= 1) {
     return("quasibinomial")
   }
   if (type == "dbl" &&
-    min(x, na.rm = TRUE) > 0) {
+      min(x, na.rm = TRUE) > 0) {
     return("Gamma")
   }
   if (type == "dbl" &&
-    min(x, na.rm = TRUE) >= 0) {
+      min(x, na.rm = TRUE) >= 0) {
     return("quasipoisson")
   }
   "gaussian"
