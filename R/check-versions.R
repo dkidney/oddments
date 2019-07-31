@@ -52,6 +52,7 @@ check_r_version <- function(check_for_updates = TRUE) {
                     if (inherits(available_version, "numeric_version")) {
                         if (current_version < available_version) {
                             message("R-", available_version, " now available")
+                            message("\thttps://cran.r-project.org/bin/macosx/")
                         }
                     } else {
                         message(
