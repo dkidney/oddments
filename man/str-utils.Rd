@@ -8,6 +8,7 @@
 \alias{lorum}
 \alias{round_str}
 \alias{integer_str}
+\alias{datetime_str}
 \alias{difftime_str}
 \title{String utils}
 \format{An object of class \code{character} of length 19.}
@@ -23,6 +24,8 @@ lorum
 round_str(x, digits = getOption("digits"))
 
 integer_str(x)
+
+datetime_str(x)
 
 difftime_str(x, digits = 1, units = "auto")
 }
@@ -57,6 +60,8 @@ inputs are 'quoted' by default
 vector using a given number of decimal places (it wraps \link[base]{sprintf})
 \item \code{integer_str()} - converts numeric/integer vector input to integer
 format and returns a character vector without using scientific notation
+\item \code{datetime_str()} - converts a datetime object to string but preserves
+the time zone suffix (wraps \link[base]{format})
 \item \code{difftime_str()} - converts a unit length \link[base]{difftime} object
 into a string that resembles the output of \link[base]{print.difftime}
 }
@@ -83,6 +88,11 @@ pi \%>\% sprintf("\%.3f", .)
 pi \%>\% round_str(3)
 
 1e10 \%>\% integer_str()
+
+t <- Sys.time()
+t \%>\% print()
+t \%>\% as.character() # doesn't preserve time zone
+t \%>\% datetime_str()
 
 start <- Sys.time()
 stop <- Sys.time()

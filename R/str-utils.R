@@ -11,6 +11,8 @@
 #'     vector using a given number of decimal places (it wraps \link[base]{sprintf})
 #'     \item \code{integer_str()} - converts numeric/integer vector input to integer
 #'     format and returns a character vector without using scientific notation
+#'     \item \code{datetime_str()} - converts a datetime object to string but preserves
+#'     the time zone suffix (wraps \link[base]{format})
 #'     \item \code{difftime_str()} - converts a unit length \link[base]{difftime} object
 #'     into a string that resembles the output of \link[base]{print.difftime}
 #' }
@@ -133,6 +135,19 @@ integer_str <- function(x) {
     as.numeric() %>%
     floor() %>%
     format(scientific = FALSE, trim = TRUE)
+}
+
+#' @rdname str-utils
+#' @name datetime_str
+#' @export
+#' @examples
+#' t <- Sys.time()
+#' t %>% print()
+#' t %>% as.character() # doesn't preserve time zone
+#' t %>% datetime_str()
+#'
+datetime_str = function(x){
+  x %>% format(usetz = TRUE)
 }
 
 #' @rdname str-utils
