@@ -106,6 +106,8 @@ check_rstudio_version <- function(check_for_updates = TRUE) {
                     if (inherits(available_version, "numeric_version")) {
                         if (current_version < available_version) {
                             message("RStudio-", available_version, " now available")
+                            message("\thttps://www.rstudio.com/products/rstudio/download/#download")
+                            
                         }
                     } else {
                         message(
