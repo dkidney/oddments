@@ -31,10 +31,8 @@ another but dont really fit in any of my other repositories.
 You can install oddments from [Github](https://www.github.com/dkidney/oddments) with:
 
 ```{r, eval=FALSE}
-if (!requireNamespace('remotes')) {
-  install.packages("remotes")
-}
-devtools::install_github("dkidney/oddments@v0.1.0")
+if (!requireNamespace('remotes')) install.packages("remotes")
+remotes::install_github("dkidney/oddments@v0.1.0")
 ```
 
 
