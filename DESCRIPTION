@@ -1,6 +1,6 @@
 Package: oddments
 Title: a mixed bag of functions
-Version: 0.1.0
+Version: 0.1.0.9000
 Authors@R: 
     person(given = "Darren",
            family = "Kidney",
