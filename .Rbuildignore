@@ -1,3 +1,5 @@
+^renv$
+^renv\.lock$
 .Rprofile
 ^.*\.Rproj$
 ^\.httr-oauth$
@@ -6,6 +8,7 @@
 ^cran-comments\.md$
 ^data-raw$
 ^wip$
+^tools$
 ^LICENSE\.md$
 ^README-.*\.png$
 ^README\.Rmd$

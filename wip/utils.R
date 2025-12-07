@@ -8,25 +8,6 @@ has_internet <- function(){
 
 # -------------------------------------------------------------------------------------- #
 
-#' @title Convert colours to hexadecimal format
-#' @description Convert a vector of colours to hexadecimal format.
-#' @param x vector of colours value (character or integer)
-#' @export
-#' @examples
-#' col2hex("blue")
-#' col2hex(4)
-#' col2hex("4")
-#' col2hex(c(4,"blue"))
-
-col2hex = function(x){
-  grDevices::col2rgb(x) %>%
-    apply(2, function(x){
-      grDevices::rgb(x[1], x[2], x[3], maxColorValue = 255)
-    })
-}
-
-# -------------------------------------------------------------------------------------- #
-
 #' @title Replace null values
 #' @description Replace \code{NULL} values with a default value. Wrapper for
 #'   \code{rlang::\link[rlang]{\%||\%}}.

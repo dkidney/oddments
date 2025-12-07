@@ -34,29 +34,6 @@
 #' @param recursive ???
 #' @param reverse ???
 #' @details ???
-#' @importFrom dplyr as_tibble
-#' @importFrom dplyr case_when
-#' @importFrom dplyr ends_with
-#' @importFrom dplyr if_else
-#' @importFrom dplyr filter
-#' @importFrom dplyr left_join
-#' @importFrom dplyr mutate
-#' @importFrom dplyr mutate_at
-#' @importFrom dplyr rename
-#' @importFrom dplyr select
-#' @importFrom dplyr starts_with
-#' @importFrom dplyr tibble
-#' @importFrom magrittr %<>%
-#' @importFrom purrr map
-#' @importFrom purrr map_chr
-#' @importFrom purrr map_if
-#' @importFrom purrr map_int
-#' @importFrom purrr map_lgl
-#' @importFrom purrr pluck
-#' @importFrom rlang .data
-#' @importFrom stringr str_flatten
-#' @importFrom tools package_dependencies
-#' @importFrom withr local_options
 #' @example inst/examples/examples-packages.R
 
 #' @rdname pkg_functions

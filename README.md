@@ -29,7 +29,3 @@ devtools::install_github("dkidney/oddments")
 # development version
 devtools::install_github("dkidney/oddments", ref = "develop")
 ```
-
-## Examples
-
-TODO
